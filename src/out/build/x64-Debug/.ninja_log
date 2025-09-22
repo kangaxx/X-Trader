@@ -1,0 +1,22 @@
+# ninja log v6
+1800	11475	7790010932245759	strategy/CMakeFiles/demo.dir/decline_scalping.cpp.obj	61161f5d5fd27cbb
+1945	11400	7790010933705840	strategy/CMakeFiles/demo.dir/decline_swing.cpp.obj	bf3c52f88c85f5ad
+2449	11444	7790010938734188	strategy/CMakeFiles/demo.dir/market_making.cpp.obj	fb3948266431061
+2091	11454	7790010935165788	strategy/CMakeFiles/demo.dir/high_low.cpp.obj	696f6f323d0b4eb3
+2337	11235	7790010937614327	strategy/CMakeFiles/demo.dir/market_correction.cpp.obj	c323d31e824168e6
+46	10660	7790010914703238	trade-core/CMakeFiles/trade-core.dir/interface.cpp.obj	b6c249c493eb95f8
+1468	11412	7790010928925440	framework/CMakeFiles/framework.dir/resample.cpp.obj	d0559a2b0e340d8f
+2237	11729	7790010936615005	strategy/CMakeFiles/demo.dir/main.cpp.obj	52c66c40be851c80
+1016	11448	7790010924405389	trade-core/CMakeFiles/trade-core.dir/market/ctp_market.cpp.obj	f0b5a172a7cee98c
+1333	14690	7790010927575386	framework/CMakeFiles/framework.dir/realtime.cpp.obj	28c08fb4b066415a
+1653	11089	7790010930775410	framework/CMakeFiles/framework.dir/strategy.cpp.obj	1241af8e9196e75d
+2561	11468	7790010939866301	strategy/CMakeFiles/demo.dir/order_flow.cpp.obj	5c080f08cd26067f
+1113	11662	7790010925375413	trade-core/CMakeFiles/trade-core.dir/trader/ctp_trader.cpp.obj	5e0f2b4db842475f
+11663	13763	7790011030872044	F:/stock/X-Trader/bin/trade-core.lib	a9d3c612fd70afd4
+1226	11451	7790010926505366	framework/CMakeFiles/framework.dir/frame.cpp.obj	3f149e986ad0fece
+14690	15046	7790011061140505	F:/stock/X-Trader/bin/framework.lib	7ec7c69ad070af27
+11089	14991	7790011025135317	strategy/CMakeFiles/demo.dir/statistical_arbitrage.cpp.obj	ffa4c870a6d8e44e
+11235	15163	7790011026597143	strategy/CMakeFiles/demo.dir/strategy_demo.cpp.obj	8df6075772c4281e
+10661	15309	7790011020855277	strategy/CMakeFiles/demo.dir/order_imbalance.cpp.obj	6ff5be60605556ea
+15310	20475	7790011067340503	F:/stock/X-Trader/bin/demo.exe	76a93a20047a7147
+35	146	7790010912083151	clean	8c45b54705a541e8
