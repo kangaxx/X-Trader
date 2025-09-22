@@ -1,0 +1,11 @@
+/root/X-Trader/src/CMakeFiles/edit_cache.dir
+/root/X-Trader/src/CMakeFiles/rebuild_cache.dir
+/root/X-Trader/src/trade-core/CMakeFiles/trade-core.dir
+/root/X-Trader/src/trade-core/CMakeFiles/edit_cache.dir
+/root/X-Trader/src/trade-core/CMakeFiles/rebuild_cache.dir
+/root/X-Trader/src/framework/CMakeFiles/framework.dir
+/root/X-Trader/src/framework/CMakeFiles/edit_cache.dir
+/root/X-Trader/src/framework/CMakeFiles/rebuild_cache.dir
+/root/X-Trader/src/strategy/CMakeFiles/demo.dir
+/root/X-Trader/src/strategy/CMakeFiles/edit_cache.dir
+/root/X-Trader/src/strategy/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,2 @@
+/usr/bin/ar qc /root/X-Trader/bin/libtrade-core.a "CMakeFiles/trade-core.dir/interface.cpp.o" "CMakeFiles/trade-core.dir/market/ctp_market.cpp.o" "CMakeFiles/trade-core.dir/trader/ctp_trader.cpp.o"
+/usr/bin/ranlib /root/X-Trader/bin/libtrade-core.a

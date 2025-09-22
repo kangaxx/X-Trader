@@ -6,3 +6,8 @@ aux_source_directory(. SRCs)
 
 add_executable(${BINARY_NAME} ${SRCs})
 target_link_libraries(${BINARY_NAME} framework)
+find_library(HIREDIS_LIB hiredis)
+if (NOT HIREDIS_LIB)
+	message(FATAL_ERROR "hiredis库未找到")
+endif()
+target_link_libraries(${BINARY_NAME} ${HIREDIS_LIB})
