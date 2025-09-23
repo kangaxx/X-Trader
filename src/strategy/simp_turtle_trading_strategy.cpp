@@ -1,5 +1,6 @@
 #include "simp_turtle_trading_strategy.h"
 #include <sstream> // 新增头文件用于字符串拼接
+#include <deque>
 
 // 策略主逻辑：每个tick行情触发
 void simp_turtle_trading_strategy::on_tick(const MarketData& tick)
