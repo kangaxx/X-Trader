@@ -1,4 +1,5 @@
 #include "simp_turtle_trading_strategy.h"
+#include <sstream> // 新增头文件用于字符串拼接
 
 // 策略主逻辑：每个tick行情触发
 void simp_turtle_trading_strategy::on_tick(const MarketData& tick)
@@ -24,13 +25,17 @@ void simp_turtle_trading_strategy::on_tick(const MarketData& tick)
     // 设置开盘标志
     if (strncmp(tick.update_time, begin_time, 5) == 0) { 
         _is_begin = true; 
-        Logger::get_instance().info("Strategy {} begin trading at {}", get_id(), tick.update_time);
+        std::ostringstream oss;
+        oss << "Strategy " << get_id() << " begin trading at " << tick.update_time;
+        Logger::get_instance().info(oss.str());
     }
 
     // 设置收盘前一分钟平仓标志
     if (strncmp(tick.update_time, close_time, 5) == 0) { 
         _is_closing = true; 
-        Logger::get_instance().info("Strategy {} start closing positions at {}", get_id(), tick.update_time);
+        std::ostringstream oss;
+        oss << "Strategy " << get_id() << " start closing positions at " << tick.update_time;
+        Logger::get_instance().info(oss.str());
     }
 
     // 获取当前合约持仓信息
@@ -71,7 +76,9 @@ void simp_turtle_trading_strategy::on_tick(const MarketData& tick)
         {
             // 突破_n1最高价，开多仓
             _buy_orderref = buy_open(eOrderFlag::Limit, _contract, tick.ask_price[0], _once_vol);
-            Logger::get_instance().info("Turtle breakout long: price {} > high_n1 {}", tick.last_price, breakout_high);
+            std::ostringstream oss;
+            oss << "Turtle breakout long: price " << tick.last_price << " > high_n1 " << breakout_high;
+            Logger::get_instance().info(oss.str());
         }
     }
     if (_sell_orderref == null_orderref && posi.short_.position + posi.short_.open_no_trade < _position_limit)
@@ -80,7 +87,9 @@ void simp_turtle_trading_strategy::on_tick(const MarketData& tick)
         {
             // 跌破_n2最低价，开空仓
             _sell_orderref = sell_open(eOrderFlag::Limit, _contract, tick.bid_price[0], _once_vol);
-            Logger::get_instance().info("Turtle breakout short: price {} < low_n2 {}", tick.last_price, breakout_low);
+            std::ostringstream oss;
+            oss << "Turtle breakout short: price " << tick.last_price << " < low_n2 " << breakout_low;
+            Logger::get_instance().info(oss.str());
         }
     }
 
@@ -89,13 +98,17 @@ void simp_turtle_trading_strategy::on_tick(const MarketData& tick)
     {
         // 多头止损
         sell_close_today(eOrderFlag::Limit, _contract, tick.bid_price[0], posi.long_.closeable);
-        Logger::get_instance().info("Turtle exit long: price {} < low_n2 {}", tick.last_price, breakout_low);
+        std::ostringstream oss;
+        oss << "Turtle exit long: price " << tick.last_price << " < low_n2 " << breakout_low;
+        Logger::get_instance().info(oss.str());
     }
     if (posi.short_.closeable > 0 && tick.last_price > breakout_high)
     {
         // 空头止损
         buy_close_today(eOrderFlag::Limit, _contract, tick.ask_price[0], posi.short_.closeable);
-        Logger::get_instance().info("Turtle exit short: price {} > high_n1 {}", tick.last_price, breakout_high);
+        std::ostringstream oss;
+        oss << "Turtle exit short: price " << tick.last_price << " > high_n1 " << breakout_high;
+        Logger::get_instance().info(oss.str());
     }
 }
 
