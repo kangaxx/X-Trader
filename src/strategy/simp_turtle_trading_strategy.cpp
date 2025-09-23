@@ -59,7 +59,7 @@ void simp_turtle_trading_strategy::on_tick(const MarketData& tick)
 
     // --- 海龟交易策略核心逻辑 ---
     // 维护历史最高价和最低价队列
-    static std::deque<double> high_n1, low_n2;
+    std::deque<double> high_n1, low_n2;
     if (high_n1.size() >= _n1) high_n1.pop_front();
     if (low_n2.size() >= _n2) low_n2.pop_front();
     high_n1.push_back(tick.highest_price);
@@ -113,7 +113,7 @@ void simp_turtle_trading_strategy::on_tick(const MarketData& tick)
 }
 
 // 订单回报处理：设置撤单条件
-void market_making::on_order(const Order& order)
+void simp_turtle_trading_strategy::on_order(const Order& order)
 {
     if (order.order_ref == _buy_orderref || order.order_ref == _sell_orderref)
     {
@@ -126,7 +126,7 @@ void market_making::on_order(const Order& order)
 }
 
 // 成交回报处理：成交一边撤另一边挂单
-void market_making::on_trade(const Order& order)
+void simp_turtle_trading_strategy::on_trade(const Order& order)
 {
     if (_buy_orderref == order.order_ref)
     {
@@ -143,7 +143,7 @@ void market_making::on_trade(const Order& order)
 }
 
 // 撤单回报处理：重置挂单引用
-void market_making::on_cancel(const Order& order)
+void simp_turtle_trading_strategy::on_cancel(const Order& order)
 {
     if (_buy_orderref == order.order_ref) { _buy_orderref = null_orderref; }
 
@@ -151,7 +151,7 @@ void market_making::on_cancel(const Order& order)
 }
 
 // 错误回报处理：重置挂单引用
-void market_making::on_error(const Order& order)
+void simp_turtle_trading_strategy::on_error(const Order& order)
 {
     if (_buy_orderref == order.order_ref) { _buy_orderref = null_orderref; }
 

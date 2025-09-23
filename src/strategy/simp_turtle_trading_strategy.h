@@ -16,7 +16,7 @@ public:
 		get_contracts().insert(contract);
 	}
 
-	~market_making() {}
+	~simp_turtle_trading_strategy() {}
 
 	virtual void on_tick(const MarketData& tick) override;
 	virtual void on_order(const Order& order) override;
