@@ -67,16 +67,16 @@ void simp_turtle_trading_strategy::on_tick(const MarketData& tick)
     std::string low_key  = "turtle:" + _contract + ":low_n2";
 
     // 推入最新价格
-    redis.lpush(high_key, std::to_string(tick.highest_price));
-    redis.lpush(low_key, std::to_string(tick.lowest_price));
+    _redis.lpush(high_key, std::to_string(tick.highest_price));
+    _redis.lpush(low_key, std::to_string(tick.lowest_price));
 
     // 保持队列长度不超过n1/n2
-    redis.ltrim(high_key, 0, _n1 - 1);
-    redis.ltrim(low_key, 0, _n2 - 1);
+    _redis.ltrim(high_key, 0, _n1 - 1);
+    _redis.ltrim(low_key, 0, _n2 - 1);
 
     // 获取队列所有元素
-    std::vector<std::string> high_n1_strs = redis.lrange(high_key, 0, _n1 - 1);
-    std::vector<std::string> low_n2_strs  = redis.lrange(low_key, 0, _n2 - 1);
+    std::vector<std::string> high_n1_strs = _redis.lrange(high_key, 0, _n1 - 1);
+    std::vector<std::string> low_n2_strs  = _redis.lrange(low_key, 0, _n2 - 1);
 
     std::deque<double> high_n1, low_n2;
     for (const auto& s : high_n1_strs) {
