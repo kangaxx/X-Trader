@@ -14,14 +14,12 @@ public:
 
 	//Send data to url by curl command
 	bool send(const char* text) {
-		std::ostringstream oss;
-		oss << "curl -H \"Content-Type: application/json\" -d "
-		    << "'{\"msgtype\":\"text\",\"text\":{\"content\":\"" << escape(text) << "\"}}' "
-		    << " \"" << _url << "\"";
-		std::string command = oss.str();
-		std::cout << "execute command: " << command << std::endl;
-		int ret = std::system(command.c_str());
-		return ret == 0;
+		char command[512];
+		std::string curl = "curl ";
+		std::string url = R"(" + _url + ")"; 
+		std::string param = R"(-H "Content-Type: application/json" -d "{\"msgtype\": \"text\", \"text\": {\"content\": ")" + escape(text) + R"("}}")";
+		sprintf(command, (curl + url + param).c_str(), text);
+		system(command);
 	}
 private:
 	std::string _url;
