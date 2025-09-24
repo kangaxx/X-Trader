@@ -66,9 +66,18 @@ void simp_turtle_trading_strategy::on_tick(const MarketData& tick)
     std::string high_key = "turtle:" + _contract + ":high_n1";
     std::string low_key  = "turtle:" + _contract + ":low_n2";
 
-    // 推入最新价格
-    _redis.lpush(high_key, std::to_string(tick.highest_price));
-    _redis.lpush(low_key, std::to_string(tick.lowest_price));
+    // 解析当前tick的分和秒
+    std::string cur_min_sec = std::string(tick.update_time).substr(3, 5); // "mm:ss"
+    bool do_lpush = false;
+    if (_last_lpush_time.empty() || cur_min_sec != _last_lpush_time) {
+        do_lpush = true;
+        _last_lpush_time = cur_min_sec;
+    }
+
+    if (do_lpush) {
+        _redis.lpush(high_key, std::to_string(tick.highest_price));
+        _redis.lpush(low_key, std::to_string(tick.lowest_price));
+    }
 
     // 保持队列长度不超过n1/n2
     _redis.ltrim(high_key, 0, _n1 - 1);
