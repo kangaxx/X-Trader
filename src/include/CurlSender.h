@@ -8,18 +8,18 @@ class CurlSender{
 public:
 	//Constructor: reads wecom_url from ini_path
 	CurlSender(const std::string& ini_path){
-		_url = read_url_from_ini(ini_path);
-		std::cout << "read url : " << _url << std::endl;
+		//_url = read_url_from_ini(ini_path);
+		//std::cout << "read url : " << _url << std::endl;
 	}
 
 	//Send data to url by curl command
 	bool send(const char* text) {
-		char command[2048];
+		char command[1024];
 		std::string curl = "curl ";
 		std::string url = R"("https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=574b86a2-a2c2-405c-8a4b-f1bc25fdf216")"; 
 		std::string param = R"( -H "Content-Type: application/json" -d "{\"msgtype\": \"text\", \"text\": {\"content\": \"%s\"}}")";
 		sprintf(command, (curl + url + param).c_str(), text);
-		system(command);
+		return system(command);
 	}
 	
 private:
