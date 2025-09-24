@@ -3,6 +3,7 @@
 
 #include <string>
 #include <memory>
+#include <vector>
 #include <hiredis/hiredis.h>
 
 // Redis客户端单例类
