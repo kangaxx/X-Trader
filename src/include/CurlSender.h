@@ -19,7 +19,6 @@ public:
 		std::string url = R"("https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=574b86a2-a2c2-405c-8a4b-f1bc25fdf216")"; 
 		std::string param = R"( -H "Content-Type: application/json" -d "{\"msgtype\": \"text\", \"text\": {\"content\": \"%s\"}}")";
 		sprintf(command, (curl + url + param).c_str(), text);
-		std::cout << "execute command: " << command << std::endl;
 		system(command);
 	}
 private:
