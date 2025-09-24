@@ -20,7 +20,7 @@
 void start_running(const char* filename)
 {
 	Logger::get_instance().info("Work server started!");
-	CurlSender sender("./ini/wecom.ini");
+	CurlSender sender("./ini/config.ini");
 	sender.send("Work server started!");
 	RedisClient& redis = RedisClient::getInstance();
 	if (!redis.connect("127.0.0.1", 6379)) {
