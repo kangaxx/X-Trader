@@ -16,7 +16,7 @@ public:
 	bool send(const char* text) {
 		char command[512];
 		std::string curl = "curl ";
-		std::string url = R"(" + _url + ")"; 
+		std::string url = "(\"" + _url + "\")"; 
 		std::string param = R"(-H "Content-Type: application/json" -d "{\"msgtype\": \"text\", \"text\": {\"content\": ")" + escape(text) + R"("}}")";
 		sprintf(command, (curl + url + param).c_str(), text);
 		system(command);
