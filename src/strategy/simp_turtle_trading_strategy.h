@@ -2,6 +2,7 @@
 
 #include "strategy.h"
 #include "Logger.h"
+#include "redis_client.h"
 
 class simp_turtle_trading_strategy : public strategy
 {
