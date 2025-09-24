@@ -2,10 +2,11 @@
 #include <fstream>
 #include <cstdlib>
 #include <iostream>
+#include <sstream>
 
 class CurlSender{
 public:
-	//Constructor: reads wecom_url from ./config.ini
+	//Constructor: reads wecom_url from ini_path
 	CurlSender(const std::string& ini_path){
 		_url = read_url_from_ini(ini_path);
 		std::cout << "read url : " << _url << std::endl;
@@ -13,12 +14,13 @@ public:
 
 	//Send data to url by curl command
 	bool send(const char* text) {
-		char command[512];
-		std::string curl = "curl ";
-		std::string param = R"( -H "Content-Type: application/json" -d "{\"msgtype\": \"text\",\"text\": {\"content\": \"%s\"}}")";
-		sprintf(command, (curl + _url + param).c_str(), text);
+		std::ostringstream oss;
+		oss << "curl -H \"Content-Type: application/json\" -d "
+		    << "'{\"msgtype\":\"text\",\"text\":{\"content\":\"" << escape(text) << "\"}}' "
+		    << _url;
+		std::string command = oss.str();
 		std::cout << "execute command: " << command << std::endl;
-		int ret = std::system(command);
+		int ret = std::system(command.c_str());
 		return ret == 0;
 	}
 private:
@@ -37,11 +39,12 @@ private:
 		return url;
 	}
 
-	//Escape double quotes in data
+	//Escape double quotes and backslashes in data
 	std::string escape(const std::string& s) {
 		std::string out;
 		for (char c: s) {
-			if (c == '"') out += "\\\"";
+			if (c == '\\') out += "\\\\";
+			else if (c == '"') out += "\\\"";
 			else out += c;
 		}
 		return out;
