@@ -71,7 +71,7 @@ void simp_turtle_trading_strategy::on_tick(const MarketData& tick)
     bool do_lpush = false;
     if (_last_lpush_time == "00:00" || cur_min_sec != _last_lpush_time) {
         do_lpush = true;
-        _last_lpush_time = cur_min_sec;
+        strcpy(_last_lpush_time, cur_min_sec.c_str());
     }
 
     if (do_lpush) {
