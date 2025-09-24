@@ -203,3 +203,12 @@ std::string RedisClient::rpop(const std::string& listKey) {
     freeReplyObject(reply);
     return result;
 }
+
+bool RedisClient::ltrim(const std::string& listKey, int start, int stop) {
+    if (!m_connected) return false;
+    redisReply* reply = (redisReply*)redisCommand(m_context, "LTRIM %s %d %d", listKey.c_str(), start, stop);
+    if (!reply) return false;
+    bool success = (reply->type == REDIS_REPLY_STATUS && std::string(reply->str) == "OK");
+    freeReplyObject(reply);
+    return success;
+}

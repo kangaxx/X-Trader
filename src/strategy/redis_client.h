@@ -29,7 +29,7 @@ public:
 	long long lpush(const std::string& listKey, const std::string& value);
 
 	std::string rpop(const std::string& listKey);
-
+	bool ltrim(const std::string& listKey, int start, int stop);
 private:
 	RedisClient();
 	~RedisClient();
