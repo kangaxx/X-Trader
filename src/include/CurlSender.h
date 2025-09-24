@@ -17,7 +17,7 @@ public:
 		char command[512];
 		std::string curl = "curl ";
 		std::string url = "(\"" + _url + "\")"; 
-		std::string param = R"(-H "Content-Type: application/json" -d "{\"msgtype\": \"text\", \"text\": {\"content\": ")" + escape(text) + R"("}}")";
+		std::string param = R"( -H "Content-Type: application/json" -d "{\"msgtype\": \"text\", \"text\": {\"content\": \"%s\"}}")";
 		sprintf(command, (curl + url + param).c_str(), text);
 		system(command);
 	}
