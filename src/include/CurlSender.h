@@ -13,6 +13,7 @@ public:
 	}
 
 	//Send data to url by curl command
+	/*
 	bool send(const char* text) {
 		char command[512];
 		std::string curl = "curl ";
@@ -20,6 +21,20 @@ public:
 		std::string param = R"( -H "Content-Type: application/json" -d "{\"msgtype\": \"text\", \"text\": {\"content\": \"%s\"}}")";
 		sprintf(command, (curl + url + param).c_str(), text);
 		system(command);
+	}
+	*/
+	bool send(const char* text) {
+		char command[1024]; // 增大缓冲区，防止溢出
+		std::string curl = "curl ";
+		std::string url = _url.empty() ? R"("https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=574b86a2-a2c2-405c-8a4b-f1bc25fdf216")" : _url;
+		std::string param = R"( -H "Content-Type: application/json" -d "{\"msgtype\": \"text\", \"text\": {\"content\": \"%s\"}}" )";
+		// 使用snprintf，确保不会溢出
+		snprintf(command, sizeof(command), "%s%s%s", curl.c_str(), url.c_str(), param.c_str());
+		char final_command[2048];
+		// 再次格式化，将text安全插入JSON
+		snprintf(final_command, sizeof(final_command), command, escape(text).c_str());
+		std::cout << "execute command: " << final_command << std::endl;
+		return system(final_command) == 0;
 	}
 private:
 	std::string _url;
