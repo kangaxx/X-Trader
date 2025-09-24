@@ -212,3 +212,32 @@ bool RedisClient::ltrim(const std::string& listKey, int start, int stop) {
     freeReplyObject(reply);
     return success;
 }
+
+std::vector<std::string> RedisClient::lrange(const std::string& listKey, int start, int stop) {
+    std::vector<std::string> result;
+    if (!m_connected) {
+        std::cerr << "Redis未连接" << std::endl;
+        return result;
+    }
+
+    redisReply* reply = (redisReply*)redisCommand(m_context, "LRANGE %s %d %d", listKey.c_str(), start, stop);
+    if (!reply) {
+        std::cerr << "LRANGE命令执行失败: " << m_context->errstr << std::endl;
+        return result;
+    }
+
+    if (reply->type == REDIS_REPLY_ARRAY) {
+        for (size_t i = 0; i < reply->elements; ++i) {
+            redisReply* elem = reply->element[i];
+            if (elem->type == REDIS_REPLY_STRING) {
+                result.emplace_back(elem->str, elem->len);
+            }
+        }
+    }
+    else {
+        std::cerr << "LRANGE命令返回意外类型: " << reply->type << std::endl;
+    }
+
+    freeReplyObject(reply);
+    return result;
+}

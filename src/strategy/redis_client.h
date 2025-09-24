@@ -30,6 +30,7 @@ public:
 
 	std::string rpop(const std::string& listKey);
 	bool ltrim(const std::string& listKey, int start, int stop);
+	std::vector<std::string> lrange(const std::string& listKey, int start, int stop);
 private:
 	RedisClient();
 	~RedisClient();
