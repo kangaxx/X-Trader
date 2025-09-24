@@ -12,6 +12,8 @@
 #include <ctime>
 #include "Logger.h"
 #include "redis_client.h"
+#include "CurlSender.h"
+
 //#include "decline_scalping.h"
 //#include "decline_swing.h"
 
