@@ -61,11 +61,6 @@ void simp_turtle_trading_strategy::on_tick(const MarketData& tick)
 
     // --- 海龟交易策略核心逻辑 ---
     // 使用Redis维护历史最高价和最低价队列
-    RedisClient& redis = RedisClient::getInstance();
-    if (!redis.connect("127.0.0.1", 6379)) {
-        Logger::get_instance().error("can not connect to redis server 127.0.0.1:6379!");
-        return;
-    }
 
     // Redis队列key建议带上合约名防止冲突
     std::string high_key = "turtle:" + _contract + ":high_n1";

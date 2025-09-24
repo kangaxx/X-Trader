@@ -14,9 +14,13 @@ public:
 		_begin_time(begin_time), _end_time(end_time)
 	{
 		get_contracts().insert(contract);
+		if (!_redis.connect("127.0.0.1", 6379)) {
+			Logger::get_instance().error("can not connect to redis server 127.0.0.1:6379!");
+			exit(1);
+		}
 	}
 
-	~simp_turtle_trading_strategy() {}
+	~simp_turtle_trading_strategy() { _redis.disconnect(); }
 
 	virtual void on_tick(const MarketData& tick) override;
 	virtual void on_order(const Order& order) override;
@@ -37,4 +41,5 @@ private:
 	std::string _end_time = "23:00:00";
 	int _n1 = 20;
 	int _n2 = 10;
+	RedisClient& _redis = RedisClient::getInstance();
 };
