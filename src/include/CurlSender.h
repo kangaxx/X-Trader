@@ -17,7 +17,7 @@ public:
 		std::ostringstream oss;
 		oss << "curl -H \"Content-Type: application/json\" -d "
 		    << "'{\"msgtype\":\"text\",\"text\":{\"content\":\"" << escape(text) << "\"}}' "
-		    << _url;
+		    << " \"" << _url << "\"";
 		std::string command = oss.str();
 		std::cout << "execute command: " << command << std::endl;
 		int ret = std::system(command.c_str());
