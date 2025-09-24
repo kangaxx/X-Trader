@@ -20,8 +20,8 @@
 void start_running(const char* filename)
 {
 	Logger::get_instance().info("Work server started!");
-	//CurlSender sender("./ini/config.ini");
-	//sender.send("Work Server Start");
+	CurlSender sender("./ini/config.ini");
+	sender.send("Work Server Start");
 	RedisClient& redis = RedisClient::getInstance();
 	if (!redis.connect("127.0.0.1", 6379)) {
 		Logger::get_instance().error( "can not connect to redis server 127.0.0.1:6379!");
