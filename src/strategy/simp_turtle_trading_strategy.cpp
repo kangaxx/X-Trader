@@ -69,7 +69,7 @@ void simp_turtle_trading_strategy::on_tick(const MarketData& tick)
     // 解析当前tick的分和秒
     std::string cur_min_sec = std::string(tick.update_time).substr(3, 5); // "mm:ss"
     bool do_lpush = false;
-    if (_last_lpush_time.empty() || cur_min_sec != _last_lpush_time) {
+    if (_last_lpush_time == "00:00" || cur_min_sec != _last_lpush_time) {
         do_lpush = true;
         _last_lpush_time = cur_min_sec;
     }

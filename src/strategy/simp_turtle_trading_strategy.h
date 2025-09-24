@@ -43,5 +43,5 @@ private:
 	int _n1 = 20;
 	int _n2 = 10;
 	RedisClient& _redis = RedisClient::getInstance();
-	TimeType _last_lpush_time = "00:00:00";
+	TimeType _last_lpush_time = "00:00";
 };
