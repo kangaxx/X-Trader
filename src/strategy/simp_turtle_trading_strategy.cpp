@@ -1,6 +1,7 @@
 #include "simp_turtle_trading_strategy.h"
-#include <sstream> // 新增头文件用于字符串拼接
+#include <sstream>
 #include <deque>
+#include "redis_client.h"
 
 // 策略主逻辑：每个tick行情触发
 void simp_turtle_trading_strategy::on_tick(const MarketData& tick)
@@ -59,12 +60,36 @@ void simp_turtle_trading_strategy::on_tick(const MarketData& tick)
     }
 
     // --- 海龟交易策略核心逻辑 ---
-    // 维护历史最高价和最低价队列
+    // 使用Redis维护历史最高价和最低价队列
+    RedisClient& redis = RedisClient::getInstance();
+    if (!redis.connect("127.0.0.1", 6379)) {
+        Logger::get_instance().error("can not connect to redis server 127.0.0.1:6379!");
+        return;
+    }
+
+    // Redis队列key建议带上合约名防止冲突
+    std::string high_key = "turtle:" + _contract + ":high_n1";
+    std::string low_key  = "turtle:" + _contract + ":low_n2";
+
+    // 推入最新价格
+    redis.lpush(high_key, std::to_string(tick.highest_price));
+    redis.lpush(low_key, std::to_string(tick.lowest_price));
+
+    // 保持队列长度不超过n1/n2
+    redis.ltrim(high_key, 0, _n1 - 1);
+    redis.ltrim(low_key, 0, _n2 - 1);
+
+    // 获取队列所有元素
+    std::vector<std::string> high_n1_strs = redis.lrange(high_key, 0, _n1 - 1);
+    std::vector<std::string> low_n2_strs  = redis.lrange(low_key, 0, _n2 - 1);
+
     std::deque<double> high_n1, low_n2;
-    if (high_n1.size() >= _n1) high_n1.pop_front();
-    if (low_n2.size() >= _n2) low_n2.pop_front();
-    high_n1.push_back(tick.highest_price);
-    low_n2.push_back(tick.lowest_price);
+    for (const auto& s : high_n1_strs) {
+        high_n1.push_back(std::stod(s));
+    }
+    for (const auto& s : low_n2_strs) {
+        low_n2.push_back(std::stod(s));
+    }
 
     // 计算突破信号
     double breakout_high = *std::max_element(high_n1.begin(), high_n1.end());
