@@ -8,7 +8,15 @@
 #include <ctime>
 #include <cmath>
 
-
+// 定义K线数据结构
+struct BarData {
+    time_t datetime;      // 时间戳
+    double open;          // 开盘价
+    double high;          // 最高价
+    double low;           // 最低价
+    double close;         // 收盘价
+    int volume;           // 成交量
+};
 // 交易记录结构
 struct TradeRecord {
     time_t datetime;      // 时间
