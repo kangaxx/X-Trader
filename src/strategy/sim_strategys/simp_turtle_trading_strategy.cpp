@@ -2,10 +2,91 @@
 #include <sstream>
 #include <deque>
 #include "redis_client.h"
+#include <jsoncpp/json/json.h>
+
+
+// 策略参数
+struct StrategyParams {
+    int fast_length = 20;     // 快速周期(分钟)
+    int slow_length = 60;     // 慢速周期(分钟)
+    int atr_length = 14;      // ATR周期
+    double risk_factor = 1.0; // 风险系数
+    double exit_multiplier = 2.0; // 退出乘数
+    int start_hour = 9;       // 开始交易小时
+    int start_minute = 0;     // 开始交易分钟
+    int end_hour = 14;        // 结束交易小时
+    int end_minute = 50;      // 结束交易分钟
+};
+
+double simp_turtle_trading_strategy::get_balance() {
+    // 这里应该返回实际的账户余额
+    return _balance; // 示例值
+}
+
+double simp_turtle_trading_strategy::calculate_commission(double price, int volume) {
+    // 这里应该根据实际的手续费率计算手续费
+    return price * volume * _commission_rate; // 示例计算
+}
+
+bool simp_turtle_trading_strategy::execute_trade(bool is_open, int size, double price, TradeRecord& record) {
+    double required_margin = price * size * _contract_multiplier * _margin;
+    if (is_open) {
+        if (_balance < required_margin) {
+            return false; // 余额不足
+        }
+        _balance -= required_margin;
+    } else {
+        _balance += required_margin; // 卖出释放保证金
+    }
+    double commission = calculate_commission(price, size);
+    _balance -= commission; // 扣除手续费
+    record.is_open = is_open;
+    record.size = size;
+    record.price = price;
+    record.commission = commission;
+    return true;
+}
 
 // 策略主逻辑：每个tick行情触发
 void simp_turtle_trading_strategy::on_tick(const MarketData& tick)
 {
+    // 获取当前分钟字符串
+    std::string tick_minute = std::string(tick.update_time).substr(0, 5); // "HH:MM"
+
+    // 判断是否为新分钟
+    if (cur_minute.empty() || tick_minute != cur_minute) {
+        // 如果不是第一分钟，先将上一分钟BarData存入Redis
+        if (!cur_minute.empty()) {
+            Json::Value bar_json;
+            bar_json["datetime"] = (Json::Int64)cur_bar.datetime;
+            bar_json["open"] = cur_bar.open;
+            bar_json["high"] = cur_bar.high;
+            bar_json["low"] = cur_bar.low;
+            bar_json["close"] = cur_bar.close;
+            bar_json["volume"] = cur_bar.volume;
+            Json::StreamWriterBuilder builder;
+            std::string bar_str = Json::writeString(builder, bar_json);
+
+            std::string bar_key = "turtle:" + _contract + ":bar_n1";
+            _redis.lpush(bar_key, bar_str);
+            _redis.ltrim(bar_key, 0, _n1 - 1);
+        }
+        // 新分钟，重置BarData
+        cur_bar.datetime = std::time(nullptr); // 或根据tick时间戳
+        cur_bar.open = tick.last_price;
+        cur_bar.high = tick.last_price;
+        cur_bar.low = tick.last_price;
+        cur_bar.close = tick.last_price;
+        cur_bar.volume = tick.volume;
+        cur_minute = tick_minute;
+    } else {
+        // 聚合当前tick到BarData
+        cur_bar.high = std::max(cur_bar.high, tick.last_price);
+        cur_bar.low = std::min(cur_bar.low, tick.last_price);
+        cur_bar.close = tick.last_price;
+        cur_bar.volume += tick.volume;
+    }
+
     // 动态计算收盘前一分钟
     char close_time[6] = {0};
     int end_hour, end_minute;

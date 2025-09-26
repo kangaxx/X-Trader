@@ -4,6 +4,25 @@
 #include "Logger.h"
 #include "redis_client.h"
 
+// 定义K线数据结构
+struct BarData {
+	time_t datetime;      // 时间戳
+	double open;          // 开盘价
+	double high;          // 最高价
+	double low;           // 最低价
+	double close;         // 收盘价
+	int volume;           // 成交量
+};
+
+// 交易记录结构
+struct TradeRecord {
+	time_t datetime;      // 时间
+	bool is_open;          // 开仓/平仓
+	int size;             // 手数
+	double price;         // 价格
+	double commission;    // 手续费
+};
+
 class simp_turtle_trading_strategy : public strategy
 {
 public:
@@ -30,6 +49,10 @@ public:
 	virtual void on_error(const Order& order) override;
 
 private:
+	double get_balance();
+	double calculate_commission(double price, int volume);
+	bool execute_trade(bool is_open, int size, double price, TradeRecord& record);
+
 	std::string _contract;
 	double _price_delta;
 	uint32_t _position_limit;
@@ -44,4 +67,10 @@ private:
 	int _n2 = 10;
 	RedisClient& _redis = RedisClient::getInstance();
 	TimeType _last_lpush_time = "00:00";
+	double _balance; // 账户余额
+	double _margin;	// 保证金比例
+	double _commission_rate;	// 手续费率
+	int _contract_multiplier;	// 合约乘数
+	BarData cur_bar;
+	std::string cur_minute;
 };
