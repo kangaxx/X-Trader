@@ -54,8 +54,7 @@ void simp_turtle_trading_strategy::on_tick(const MarketData& tick)
     std::string tick_minute = std::string(tick.update_time).substr(0, 5); // "HH:MM"
 
     // 静态/成员变量维护BarData历史
-    static std::deque<BarData> bar_history; // 用于ATR计算
-    static double last_close = 0.0;
+    static std::deque<BarData> bar_history; // 用于高低点和ATR等计算
 
     // 判断是否为新分钟
     if (cur_minute.empty() || tick_minute != cur_minute) {
@@ -76,11 +75,10 @@ void simp_turtle_trading_strategy::on_tick(const MarketData& tick)
             _redis.ltrim(bar_key, 0, _n1 - 1);
 
             // --- ATR计算与存储 ---
-            // 1. 保存bar到历史
             bar_history.push_back(cur_bar);
             if (bar_history.size() > _n1) bar_history.pop_front();
 
-            // 2. 计算TR
+            // 计算TR
             std::vector<double> tr_list;
             for (size_t i = 1; i < bar_history.size(); ++i) {
                 double high = bar_history[i].high;
@@ -89,19 +87,48 @@ void simp_turtle_trading_strategy::on_tick(const MarketData& tick)
                 double tr = std::max({high - low, std::abs(high - prev_close), std::abs(low - prev_close)});
                 tr_list.push_back(tr);
             }
-
-            // 3. 计算ATR（简单算术平均）
             double atr = 0.0;
             if (!tr_list.empty()) {
                 double sum = 0.0;
                 for (double v : tr_list) sum += v;
                 atr = sum / tr_list.size();
             }
-
-            // 4. 存储ATR到Redis队列
             std::string atr_key = "turtle:" + _contract + ":atr_n1";
             _redis.lpush(atr_key, std::to_string(atr));
             _redis.ltrim(atr_key, 0, _n1 - 1);
+
+            // --- 快速高低点 ---
+            if (bar_history.size() >= _n1) {
+                double fast_high = bar_history[bar_history.size() - _n1].high;
+                double fast_low = bar_history[bar_history.size() - _n1].low;
+                for (size_t i = bar_history.size() - _n1; i < bar_history.size(); ++i) {
+                    fast_high = std::max(fast_high, bar_history[i].high);
+                    fast_low = std::min(fast_low, bar_history[i].low);
+                }
+                std::string high_key = "turtle:" + _contract + ":fast_high_n1";
+                std::string low_key  = "turtle:" + _contract + ":fast_low_n1";
+                _redis.lpush(high_key, std::to_string(fast_high));
+                _redis.ltrim(high_key, 0, _n1 - 1);
+                _redis.lpush(low_key, std::to_string(fast_low));
+                _redis.ltrim(low_key, 0, _n1 - 1);
+            }
+
+            // --- 慢速高低点 ---
+            int slow_len = _slow_length > 0 ? _slow_length : 60;
+            if (bar_history.size() >= slow_len) {
+                double slow_high = bar_history[bar_history.size() - slow_len].high;
+                double slow_low = bar_history[bar_history.size() - slow_len].low;
+                for (size_t i = bar_history.size() - slow_len; i < bar_history.size(); ++i) {
+                    slow_high = std::max(slow_high, bar_history[i].high);
+                    slow_low = std::min(slow_low, bar_history[i].low);
+                }
+                std::string slow_high_key = "turtle:" + _contract + ":slow_high_n1";
+                std::string slow_low_key  = "turtle:" + _contract + ":slow_low_n1";
+                _redis.lpush(slow_high_key, std::to_string(slow_high));
+                _redis.ltrim(slow_high_key, 0, _n1 - 1);
+                _redis.lpush(slow_low_key, std::to_string(slow_low));
+                _redis.ltrim(slow_low_key, 0, _n1 - 1);
+            }
         }
         // 新分钟，重置BarData
         cur_bar.datetime = std::time(nullptr); // 或根据tick时间戳
