@@ -114,7 +114,7 @@ void simp_turtle_trading_strategy::on_tick(const MarketData& tick)
             }
 
             // --- ÂýËÙ¸ßµÍµã ---
-            int slow_len = _slow_length > 0 ? _slow_length : 60;
+            int slow_len = 60;
             if (bar_history.size() >= slow_len) {
                 double slow_high = bar_history[bar_history.size() - slow_len].high;
                 double slow_low = bar_history[bar_history.size() - slow_len].low;
