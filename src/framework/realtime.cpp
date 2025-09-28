@@ -414,6 +414,7 @@ void realtime::handle_error(const Order& order)
 void realtime::load_trader_data()
 {
 	get_trader().get_trader_data(_instrument_map, _position_map, _order_map);
+	get_trader().get_account(); // ²éÑ¯×Ê½ğ by gxx
 }
 
 

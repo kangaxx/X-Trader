@@ -145,7 +145,15 @@ void simp_turtle_trading_strategy::on_tick(const MarketData& tick)
         cur_bar.close = tick.last_price;
         cur_bar.volume += tick.volume;
     }
+    
+    //计算头寸大小
 
+    double account_value = account.get_balance();
+    double risk_per_trade = account_value * 0.01;
+    int contract_multiplier = 10; // 螺纹钢10吨/手
+
+    double position_size_temp = risk_per_trade / (atr_values[index] * contract_multiplier);
+    int position = std::max(1, (int)std::round(position_size));
     // 动态计算收盘前一分钟
     char close_time[6] = {0};
     int end_hour, end_minute;
