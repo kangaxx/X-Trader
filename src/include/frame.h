@@ -25,7 +25,7 @@ private:
 			{
 				if (strat) { strat->on_tick(tick); }
 			}
-		}
+		} 
 		
 		auto it_r = _self->_resample.find(tick.instrument_id);
 		if (it_r != _self->_resample.end())

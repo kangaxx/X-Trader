@@ -57,7 +57,6 @@ using  ErrorMsgType = char[81]; ///错误信息类型
 using  TradeIDType = char[21]; ///成交编号类型
 using  ClientIDType = char[11];///交易编码类型
 
-
 inline void send2wecom(const char* text)
 {
 	char command[512];

@@ -51,6 +51,16 @@ const Instrument& realtime::get_instrument(const std::string& contract) const
 	return null_instrument;
 }
 
+const FundAccount& realtime::get_fund_account(const std::string& investorID) const
+{
+	const auto& it = _fund_account_map.find(investorID);
+	if (it != _fund_account_map.end())
+	{
+		return (it->second);
+	}
+	return null_fund_account;
+}
+
 bool realtime::init(const std::string& filename, const std::set<std::string>& contracts)
 {
 	if (!std::filesystem::exists(filename.c_str()))
@@ -413,8 +423,8 @@ void realtime::handle_error(const Order& order)
 
 void realtime::load_trader_data()
 {
-	get_trader().get_trader_data(_instrument_map, _position_map, _order_map);
 	get_trader().get_account(); // ²éÑ¯×Ê½ğ by gxx
+	get_trader().get_trader_data(_instrument_map, _position_map, _order_map, _fund_account_map);
 }
 
 

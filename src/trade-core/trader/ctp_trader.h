@@ -21,7 +21,7 @@ public:
 	virtual bool cancel_order(const orderref_t order_ref) override;
 	virtual std::string get_trading_day() const override;
 	virtual void get_trader_data(InstrumentMap& i_map, PositionMap& p_map, OrderMap& o_map) override;
-	virtual void get_account() override;
+	virtual void get_account(FundAccountMap& a_map) override;
 
 private:
 	void req_auth();
@@ -224,6 +224,7 @@ private:
 	InstrumentMap _instrument_map{};
 	OrderMap _order_map{};
 	PositionMap _position_map{};
+	FundAccountMap _fund_account_map{};
 	std::set<std::string> _contracts{};
 
 
@@ -347,6 +348,34 @@ private:
 		printf("InstrumentID = %s\n", p->InstrumentID);///合约代码
 		//printf("ExchangeInstID = %s\n", p->ExchangeInstID);///合约在交易所的代码
 		printf("\n");
+	}
+
+	inline void print(CThostFtdcTradingAccountField* p)
+	{
+		printf("\n");
+		printf("AccountID = %s\n", p->AccountID);///投资者帐号
+		printf("PreMortgage = %.2f\n", p->PreMortgage);///上次质押金额
+		printf("PreCredit = %.2f\n", p->PreCredit);///上次信用额度
+		printf("PreDeposit = %.2f\n", p->PreDeposit);///上次存款额
+		printf("PreBalance = %.2f\n", p->PreBalance);///上次结算准备金
+		printf("PreMargin = %.2f\n", p->PreMargin);///上次占用的保证金
+		printf("InterestBase = %.2f\n", p->InterestBase);///利息基数
+		printf("Interest = %.2f\n", p->Interest);///利息收入
+		printf("Deposit = %.2f\n", p->Deposit);///入金金额
+		printf("Withdraw = %.2f\n", p->Withdraw);///出金金额
+		printf("FrozenMargin = %.2f\n", p->FrozenMargin);///冻结的保证金
+		printf("FrozenCash = %.2f\n", p->FrozenCash);///冻结的资金
+		printf("FrozenCommission = %.2f\n", p->FrozenCommission);///冻结的手续费
+		printf("CurrMargin = %.2f\n", p->CurrMargin);///当前保证金总额
+		printf("CashIn = %.2f\n", p->CashIn);///资金差额
+		printf("Commission = %.2f\n", p->Commission);///手续费
+		printf("CloseProfit = %.2f\n", p->CloseProfit);///平仓盈亏
+		printf("PositionProfit = %.2f\n", p->PositionProfit);///持仓盈亏
+		printf("Balance = %.2f\n", p->Balance);///期货结算准备金
+		printf("Available = %.2f\n", p->Available);///可用资金
+		printf("WithdrawQuota = %.2f\n", p->WithdrawQuota);///可取资金
+		printf("Reserve = %.2f\n", p->Reserve);///基本准备金
+		printf("TradingDay = %s\n", p->TradingDay);///交易日
 	}
 
 	void print_local_time()

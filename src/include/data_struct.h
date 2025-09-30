@@ -331,8 +331,116 @@ struct Order
 
 	//bool is_cancelable = true;///是否可以撤销
 };
-
 const Order null_order{};
+
+struct FundAccount
+{
+	///经纪公司代码
+	BrokerIDType BrokerID;
+	///投资者代码
+	InvestorIDType InvestorID;
+	///资金账户
+	char FundAccount[21];
+	///币种代码
+	char CurrencyID[4];
+	///前结算准备金
+	double PreMargin;
+	///可用资金
+	double Available;
+	///资金余额
+	double Balance;
+	///持仓保证金
+	double PositionMargin;
+	///平仓盈亏
+	double CloseProfit;
+	///持仓盈亏
+	double PositionProfit;
+	///交割保证金
+	double DeliveryMargin;
+	///手续费
+	double Commission;
+	///冻结的保证金
+	double FrozenMargin;
+	///冻结的手续费
+	double FrozenCommission;
+	///冻结的平仓盈亏
+	double FrozenCloseProfit;
+	///利息收入
+	double Interest;
+	///资金净值
+	double NetAsset;
+	///当日入金
+	double Deposit;
+	///当日出金
+	double Withdraw;
+	///结算编号
+	char SettlementID[9];
+	///信用额度
+	double Credit;
+	///质押金
+	double Mortgage;
+	///交易所保证金
+	double ExchangeMargin;
+	///公司保证金
+	double BrokerMargin;
+	///起息日权益
+	double InterestBase;
+	///货币转换因子
+	double CurrencyRate;
+	///利息税
+	double InterestTax;
+	///保底资金
+	double Reserve;
+	///风险度
+	double RiskRate;
+	///结算确认状态
+	char SettlementConfirmStatus;
+	///组合保证金
+	double CombineMargin;
+	///组合可用资金
+	double CombineAvailable;
+	///上次结算准备金
+	double LastMargin;
+	///币种类型
+	char CurrencyType;
+	///特殊产品保证金
+	double SpecialProductMargin;
+	///特殊产品可用资金
+	double SpecialProductAvailable;
+	///逐笔对冲平仓盈亏
+	double CloseProfitByTrade;
+	///期权权利金
+	double OptionPremium;
+	///组合持仓盈亏
+	double CombinePositionProfit;
+	///组合平仓盈亏
+	double CombineCloseProfit;
+	///组合逐笔对冲平仓盈亏
+	double CombineCloseProfitByTrade;
+	///组合期权权利金
+	double CombineOptionPremium;
+	///特殊产品持仓盈亏
+	double SpecialProductPositionProfit;
+	///特殊产品平仓盈亏
+	double SpecialProductCloseProfit;
+	///特殊产品逐笔对冲平仓盈亏
+	double SpecialProductCloseProfitByTrade;
+	///特殊产品期权权利金
+	double SpecialProductOptionPremium;
+	///资金账号状态
+	char FundAccountStatus;
+	///组合风险度
+	double CombineRiskRate;
+	///特殊产品风险度
+	double SpecialProductRiskRate;
+	///当日盈利
+	double TodayProfit;
+	///组合当日盈利
+	double CombineTodayProfit;
+	///特殊产品当日盈利
+	double SpecialProductTodayProfit;
+};
+const FundAccount null_fund_account{};
 
 struct tape_receiver
 {
@@ -369,8 +477,7 @@ struct OrderEvent
 using InstrumentMap = std::unordered_map<std::string, Instrument>;
 using OrderMap = std::map<orderref_t, Order>;
 using PositionMap = std::map<std::string, Position>;
-
-
+using FundAccountMap = std::map < std::string, FundAccount > ;
 
 
 inline std::map<eDirOffset, std::string> eDirOffsetToString =

@@ -20,6 +20,7 @@ private:
 	InstrumentMap _instrument_map;
 	PositionMap _position_map;
 	OrderMap _order_map;
+	FundAccountMap _fund_account_map;
 
 	tick_callback _tick_callback;
 	update_callback _update_callback;
@@ -50,6 +51,7 @@ public:
 	const Position& get_position(const std::string& contract) const;
 	const Order& get_order(const orderref_t orderref) const;
 	const Instrument& get_instrument(const std::string& contract) const;
+	const FundAccount& get_fund_account(const std::string& contract) const;)
 	void get_account() { get_trader().get_account(); }
 
 public:
@@ -72,3 +74,4 @@ public:
 	void print_order(const Order& order);
 	void print_position(const Position& posi, const char* msg);
 };
+
