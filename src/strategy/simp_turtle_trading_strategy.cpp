@@ -147,8 +147,8 @@ void simp_turtle_trading_strategy::on_tick(const MarketData& tick)
     }
     
     //计算头寸大小
-
-    double account_value = account.get_balance();
+    TradingAccount ta = get_trader_account("");
+    double account_value = ta.Balance;
     double risk_per_trade = account_value * 0.01;
     int contract_multiplier = 10; // 螺纹钢10吨/手
 

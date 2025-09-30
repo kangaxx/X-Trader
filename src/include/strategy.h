@@ -45,5 +45,6 @@ protected:
 	bool cancel_order(const orderref_t order_ref);
 	const Position& get_position(const std::string& contract) const;
 	const Order& get_order(const orderref_t orderref) const;
+	const TradingAccount& get_trader_account(const std::string& accountId) const;
 	void set_cancel_condition(orderref_t id, std::function<bool(orderref_t)> callback);
 };

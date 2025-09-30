@@ -137,22 +137,21 @@ std::string ctp_trader::get_trading_day() const
 	return _td_api->GetTradingDay();
 }
 
-void ctp_trader::get_trader_data(InstrumentMap& i_map, PositionMap& p_map, OrderMap& o_map, FundAccountMap& a_map)
+void ctp_trader::get_trader_data(InstrumentMap& i_map, PositionMap& p_map, OrderMap& o_map)
 {
 	i_map = _instrument_map;
 	p_map = _position_map;
 	o_map = _order_map;
-	a_map = _fund_account_map;
 }
 
-void ctp_trader::get_account(FundAccountMap& a_map)
+void ctp_trader::get_account(TradingAccountMap& t_map)
 {
 	CThostFtdcQryTradingAccountField t{};
 	strcpy(t.BrokerID, _broker_id.c_str());
 	strcpy(t.InvestorID, _user_id.c_str());
 
 	int rtn = _td_api->ReqQryTradingAccount(&t, generate_reqid());
-	a_map = _fund_account_map;
+	t_map = _trading_account_map;
 }
 
 void ctp_trader::req_auth()
@@ -405,12 +404,17 @@ void ctp_trader::OnRspQryTradingAccount(CThostFtdcTradingAccountField* pAcc, CTh
 	if (pRspInfo && pRspInfo->ErrorID) { return; }
 	if (pAcc)
 	{
-		FundAccount fa{};
+		TradingAccount fa{};
 		char text[128];
 		sprintf(text, "AccountID=%s, CloseProfit=%.2f, PositionProfit=%.2f, Commission=%.2f, NetProfit=%.2f",
 			pAcc->AccountID, pAcc->CloseProfit, pAcc->PositionProfit, pAcc->Commission,
 			pAcc->CloseProfit + pAcc->PositionProfit - pAcc->Commission);
-		FundAccountMap[pAcc->AccountID] = text;
+		strcpy(fa.account_id, pAcc->AccountID);
+		strcpy(fa.BrokerID, pAcc->BrokerID);
+		strcpy(fa.CurrencyID, pAcc->CurrencyID);
+		fa.pre_balance = pAcc->PreBalance;
+		fa.balance = pAcc->Balance;
+		TradingAccountMap[pAcc->AccountID] = fa;
 		//send2wecom(text);
 	}
 }

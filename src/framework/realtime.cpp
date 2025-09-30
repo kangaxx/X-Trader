@@ -51,9 +51,17 @@ const Instrument& realtime::get_instrument(const std::string& contract) const
 	return null_instrument;
 }
 
-const FundAccount& realtime::get_fund_account(const std::string& investorID) const
+const TradingAccount& realtime::get_trader_account(const std::string& accountId) const
 {
-	const auto& it = _fund_account_map.find(investorID);
+	if (accountId.empty() || accountId == "") 
+	{
+		if (_trader_account_map.size() == 1) 
+		{
+			return _trader_account_map.begin()->second; 
+		}
+		return null_fund_account; 
+	}
+	const auto& it = _trader_account_map.find(accountId);
 	if (it != _fund_account_map.end())
 	{
 		return (it->second);
@@ -423,8 +431,7 @@ void realtime::handle_error(const Order& order)
 
 void realtime::load_trader_data()
 {
-	get_trader().get_account(); // ²éÑ¯×Ê½ğ by gxx
-	get_trader().get_trader_data(_instrument_map, _position_map, _order_map, _fund_account_map);
+	get_trader().get_trader_data(_instrument_map, _position_map, _order_map);
 }
 
 

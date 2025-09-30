@@ -224,7 +224,7 @@ private:
 	InstrumentMap _instrument_map{};
 	OrderMap _order_map{};
 	PositionMap _position_map{};
-	FundAccountMap _fund_account_map{};
+	TradingAccountMap _trading_account_map{};
 	std::set<std::string> _contracts{};
 
 
