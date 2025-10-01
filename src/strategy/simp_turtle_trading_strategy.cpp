@@ -152,8 +152,20 @@ void simp_turtle_trading_strategy::on_tick(const MarketData& tick)
     double risk_per_trade = account_value * 0.01;
     int contract_multiplier = 10; // 螺纹钢10吨/手
 
-    double position_size_temp = risk_per_trade / (atr_values[index] * contract_multiplier);
+    // --- 新增：从Redis读取ATR列表 ---
+    std::string atr_key = "turtle:" + _contract + ":atr_n1";
+    std::vector<std::string> atr_strs = _redis.lrange(atr_key, 0, 0); // 取最新一个ATR
+    double atr = 0.0;
+    if (!atr_strs.empty()) {
+        atr = std::stod(atr_strs[0]);
+    }
+    // --- 头寸计算 ---
+    double position_size = 1.0;
+    if (atr > 1e-8) { // 防止除零
+        position_size = risk_per_trade / (atr * contract_multiplier);
+    }
     int position = std::max(1, (int)std::round(position_size));
+
     // 动态计算收盘前一分钟
     char close_time[6] = {0};
     int end_hour, end_minute;
