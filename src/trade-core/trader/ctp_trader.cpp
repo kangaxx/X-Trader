@@ -409,12 +409,12 @@ void ctp_trader::OnRspQryTradingAccount(CThostFtdcTradingAccountField* pAcc, CTh
 		sprintf(text, "AccountID=%s, CloseProfit=%.2f, PositionProfit=%.2f, Commission=%.2f, NetProfit=%.2f",
 			pAcc->AccountID, pAcc->CloseProfit, pAcc->PositionProfit, pAcc->Commission,
 			pAcc->CloseProfit + pAcc->PositionProfit - pAcc->Commission);
-		strcpy(fa.account_id, pAcc->AccountID);
+		strcpy(fa.AccountID, pAcc->AccountID);
 		strcpy(fa.BrokerID, pAcc->BrokerID);
 		strcpy(fa.CurrencyID, pAcc->CurrencyID);
-		fa.pre_balance = pAcc->PreBalance;
-		fa.balance = pAcc->Balance;
-		TradingAccountMap[pAcc->AccountID] = fa;
+		fa.PreBalance = pAcc->PreBalance;
+		fa.Balance = pAcc->Balance;
+		_trading_account_map[fa.AccountID] = fa;
 		//send2wecom(text);
 	}
 }

@@ -59,14 +59,14 @@ const TradingAccount& realtime::get_trader_account(const std::string& accountId)
 		{
 			return _trader_account_map.begin()->second; 
 		}
-		return null_fund_account; 
+		return null_trading_account; 
 	}
 	const auto& it = _trader_account_map.find(accountId);
-	if (it != _fund_account_map.end())
+	if (it != _trader_account_map.end())
 	{
 		return (it->second);
 	}
-	return null_fund_account;
+	return null_trading_account;
 }
 
 bool realtime::init(const std::string& filename, const std::set<std::string>& contracts)

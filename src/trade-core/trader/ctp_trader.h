@@ -21,7 +21,7 @@ public:
 	virtual bool cancel_order(const orderref_t order_ref) override;
 	virtual std::string get_trading_day() const override;
 	virtual void get_trader_data(InstrumentMap& i_map, PositionMap& p_map, OrderMap& o_map) override;
-	virtual void get_account(FundAccountMap& a_map) override;
+	virtual void get_account(TradingAccountMap& a_map) override;
 
 private:
 	void req_auth();

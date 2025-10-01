@@ -366,67 +366,65 @@ struct OrderEvent
 		: on_order(order_cb), on_trade(trade_cb), on_cancel(cancel_cb), on_error(error_cb) {}
 };
 
+// 用于CTP账户信息的结构体，字段参照CThostFtdcTradingAccountField
+struct TradingAccount
+{
+	char BrokerID[11]{};         // 经纪公司代码
+	char AccountID[13]{};        // 投资者账户
+	char InvestorID[13]{};       // 投资者代码
+	char CurrencyID[4]{};        // 币种代码
+
+	double PreMortgage = 0;      // 上次质押金额
+	double PreCredit = 0;        // 上次信用额度
+	double PreDeposit = 0;       // 上次存款额
+	double PreBalance = 0;       // 上次结算准备金
+	double PreMargin = 0;        // 上次占用的保证金
+	double InterestBase = 0;     // 利息基数
+	double Interest = 0;         // 利息收入
+	double Deposit = 0;          // 入金金额
+	double Withdraw = 0;         // 出金金额
+	double FrozenMargin = 0;     // 冻结的保证金
+	double FrozenCash = 0;       // 冻结的资金
+	double FrozenCommission = 0; // 冻结的手续费
+	double CurrMargin = 0;       // 当前保证金总额
+	double CashIn = 0;           // 资金差额
+	double Commission = 0;       // 手续费
+	double CloseProfit = 0;      // 平仓盈亏
+	double PositionProfit = 0;   // 持仓盈亏
+	double Balance = 0;          // 期货结算准备金
+	double Available = 0;        // 可用资金
+	double WithdrawQuota = 0;    // 可取资金
+	double Reserve = 0;          // 基本准备金
+	char TradingDay[9]{};        // 交易日
+	double SettlementID = 0;     // 结算编号
+	double Credit = 0;           // 信用额度
+	double Mortgage = 0;         // 质押金额
+	double ExchangeMargin = 0;   // 交易所保证金
+	double DeliveryMargin = 0;   // 交割保证金
+	double ExchangeDeliveryMargin = 0; // 交易所交割保证金
+	double ReserveBalance = 0;   // 保底资金
+	char CurrencyType;           // 币种类型
+	double PreFundMortgageIn = 0;    // 上次货币质入金额
+	double PreFundMortgageOut = 0;   // 上次货币质出金额
+	double FundMortgageIn = 0;       // 货币质入金额
+	double FundMortgageOut = 0;      // 货币质出金额
+	double FundMortgageAvailable = 0;// 货币质押余额
+	double MortgageableFund = 0;     // 可质押货币金额
+	double SpecProductMargin = 0;    // 特殊产品占用保证金
+	double SpecProductFrozenMargin = 0; // 特殊产品冻结保证金
+	double SpecProductCommission = 0;   // 特殊产品手续费
+	double SpecProductFrozenCommission = 0; // 特殊产品冻结手续费
+	double SpecProductPositionProfit = 0;   // 特殊产品持仓盈亏
+	double SpecProductCloseProfit = 0;      // 特殊产品平仓盈亏
+	double SpecProductPositionProfitByAlg = 0; // 根据持仓盈亏算法计算的特殊产品持仓盈亏
+	double SpecProductExchangeMargin = 0;      // 特殊产品交易所保证金
+};
+const TradingAccount null_trading_account{};
+
 using InstrumentMap = std::unordered_map<std::string, Instrument>;
 using OrderMap = std::map<orderref_t, Order>;
 using PositionMap = std::map<std::string, Position>;
 using TradingAccountMap = std::map < std::string, TradingAccount > ;
-
-
-// 用于CTP账户信息的结构体，字段参照CThostFtdcTradingAccountField
-struct TradingAccount
-{
-    char BrokerID[11]{};         // 经纪公司代码
-    char AccountID[13]{};        // 投资者账户
-    char InvestorID[13]{};       // 投资者代码
-    char CurrencyID[4]{};        // 币种代码
-
-    double PreMortgage = 0;      // 上次质押金额
-    double PreCredit = 0;        // 上次信用额度
-    double PreDeposit = 0;       // 上次存款额
-    double PreBalance = 0;       // 上次结算准备金
-    double PreMargin = 0;        // 上次占用的保证金
-    double InterestBase = 0;     // 利息基数
-    double Interest = 0;         // 利息收入
-    double Deposit = 0;          // 入金金额
-    double Withdraw = 0;         // 出金金额
-    double FrozenMargin = 0;     // 冻结的保证金
-    double FrozenCash = 0;       // 冻结的资金
-    double FrozenCommission = 0; // 冻结的手续费
-    double CurrMargin = 0;       // 当前保证金总额
-    double CashIn = 0;           // 资金差额
-    double Commission = 0;       // 手续费
-    double CloseProfit = 0;      // 平仓盈亏
-    double PositionProfit = 0;   // 持仓盈亏
-    double Balance = 0;          // 期货结算准备金
-    double Available = 0;        // 可用资金
-    double WithdrawQuota = 0;    // 可取资金
-    double Reserve = 0;          // 基本准备金
-    char TradingDay[9]{};        // 交易日
-    double SettlementID = 0;     // 结算编号
-    double Credit = 0;           // 信用额度
-    double Mortgage = 0;         // 质押金额
-    double ExchangeMargin = 0;   // 交易所保证金
-    double DeliveryMargin = 0;   // 交割保证金
-    double ExchangeDeliveryMargin = 0; // 交易所交割保证金
-    double ReserveBalance = 0;   // 保底资金
-    char CurrencyType;           // 币种类型
-    double PreFundMortgageIn = 0;    // 上次货币质入金额
-    double PreFundMortgageOut = 0;   // 上次货币质出金额
-    double FundMortgageIn = 0;       // 货币质入金额
-    double FundMortgageOut = 0;      // 货币质出金额
-    double FundMortgageAvailable = 0;// 货币质押余额
-    double MortgageableFund = 0;     // 可质押货币金额
-    double SpecProductMargin = 0;    // 特殊产品占用保证金
-    double SpecProductFrozenMargin = 0; // 特殊产品冻结保证金
-    double SpecProductCommission = 0;   // 特殊产品手续费
-    double SpecProductFrozenCommission = 0; // 特殊产品冻结手续费
-    double SpecProductPositionProfit = 0;   // 特殊产品持仓盈亏
-    double SpecProductCloseProfit = 0;      // 特殊产品平仓盈亏
-    double SpecProductPositionProfitByAlg = 0; // 根据持仓盈亏算法计算的特殊产品持仓盈亏
-    double SpecProductExchangeMargin = 0;      // 特殊产品交易所保证金
-};
-const TradingAccount null_trading_account{};
-
 
 inline std::map<eDirOffset, std::string> eDirOffsetToString =
 {

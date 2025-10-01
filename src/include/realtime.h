@@ -51,7 +51,7 @@ public:
 	const Position& get_position(const std::string& contract) const;
 	const Order& get_order(const orderref_t orderref) const;
 	const Instrument& get_instrument(const std::string& contract) const;
-	const TradingAccount& get_trader_account(const std::string& accountId) const;)
+	const TradingAccount& get_trader_account(const std::string& accountId) const;
 	void get_account() { get_trader().get_account(_trader_account_map); }
 
 public:

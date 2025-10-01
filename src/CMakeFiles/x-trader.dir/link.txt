@@ -1,1 +1,0 @@
-/usr/bin/c++ "CMakeFiles/x-trader.dir/strategy/main.cpp.o" -o /root/X-Trader/bin/x-trader  /usr/lib/x86_64-linux-gnu/libhiredis.so 

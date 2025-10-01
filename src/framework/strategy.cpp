@@ -62,6 +62,11 @@ const Order& strategy::get_order(const orderref_t orderref) const
 	return _frame._realtime->get_order(orderref);
 }
 
+const TradingAccount& strategy::get_trader_account(const std::string& accountId) const
+{
+	return _frame._realtime->get_trader_account(accountId);
+}
+
 void strategy::set_cancel_condition(orderref_t id, std::function<bool(orderref_t)> callback)
 {
 	return _frame.set_cancel_condition(id, callback);
