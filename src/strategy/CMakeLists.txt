@@ -19,9 +19,6 @@ if (NOT WIN32)
     if (NOT JSONCPP_LIB)
         message(FATAL_ERROR "jsoncpp库未找到")
     endif()
-endif()
-if (WIN32)
-# do nothing
-else()
     target_link_libraries(${BINARY_NAME} ${HIREDIS_LIB} ${JSONCPP_LIB})
 endif()
+
