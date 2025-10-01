@@ -40,4 +40,4 @@ private:
     bool m_connected;
 
 };
-
+#endif // REDIS_CLIENT_H
