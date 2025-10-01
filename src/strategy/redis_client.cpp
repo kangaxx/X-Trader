@@ -1,13 +1,5 @@
 #include "redis_client.h"
 #include <iostream>
-#include <cstring>
-
-RedisClient& RedisClient::getInstance() {
-    static RedisClient instance;
-    return instance;
-}
-
-#ifndef _WIN32
 
 RedisClient::RedisClient() : m_context(nullptr), m_connected(false) {}
 
@@ -15,28 +7,30 @@ RedisClient::~RedisClient() {
     disconnect();
 }
 
+RedisClient& RedisClient::getInstance() {
+    static RedisClient instance;
+    return instance;
+}
+
 bool RedisClient::connect(const std::string& host, int port, int timeout) {
-    if (m_connected) {
-        disconnect();
-    }
+    disconnect();
     struct timeval tv;
     tv.tv_sec = timeout / 1000;
     tv.tv_usec = (timeout % 1000) * 1000;
     m_context = redisConnectWithTimeout(host.c_str(), port, tv);
     if (m_context == nullptr || m_context->err) {
         if (m_context) {
-            std::cerr << "Redis连接失败: " << m_context->errstr << std::endl;
+            std::cerr << "Redis connect error: " << m_context->errstr << std::endl;
             redisFree(m_context);
             m_context = nullptr;
         }
         else {
-            std::cerr << "Redis连接失败: 内存分配错误" << std::endl;
+            std::cerr << "Redis connect error: can't allocate redis context" << std::endl;
         }
         m_connected = false;
         return false;
     }
     m_connected = true;
-    std::cout << "Redis连接成功" << std::endl;
     return true;
 }
 
@@ -46,7 +40,6 @@ void RedisClient::disconnect() {
         m_context = nullptr;
     }
     m_connected = false;
-    std::cout << "Redis连接已断开" << std::endl;
 }
 
 bool RedisClient::isConnected() const {
@@ -54,179 +47,92 @@ bool RedisClient::isConnected() const {
 }
 
 bool RedisClient::set(const std::string& key, const std::string& value) {
-    if (!m_connected) {
-        std::cerr << "Redis未连接" << std::endl;
-        return false;
-    }
+    if (!m_connected) return false;
     redisReply* reply = (redisReply*)redisCommand(m_context, "SET %s %s", key.c_str(), value.c_str());
-    if (!reply) {
-        std::cerr << "SET命令执行失败: " << m_context->errstr << std::endl;
-        return false;
-    }
-    bool success = (reply->type == REDIS_REPLY_STATUS && strcmp(reply->str, "OK") == 0);
-    freeReplyObject(reply);
+    bool success = reply && reply->type == REDIS_REPLY_STATUS && std::string(reply->str) == "OK";
+    if (reply) freeReplyObject(reply);
     return success;
 }
 
 std::string RedisClient::get(const std::string& key) {
-    if (!m_connected) {
-        std::cerr << "Redis未连接" << std::endl;
-        return "";
-    }
+    if (!m_connected) return "";
     redisReply* reply = (redisReply*)redisCommand(m_context, "GET %s", key.c_str());
-    if (!reply) {
-        std::cerr << "GET命令执行失败: " << m_context->errstr << std::endl;
-        return "";
+    std::string value;
+    if (reply && reply->type == REDIS_REPLY_STRING) {
+        value = reply->str;
     }
-    std::string result;
-    if (reply->type == REDIS_REPLY_STRING) {
-        result = reply->str;
-    }
-    else if (reply->type == REDIS_REPLY_NIL) {
-        result = "";
-    }
-    else {
-        std::cerr << "GET命令返回意外类型: " << reply->type << std::endl;
-    }
-    freeReplyObject(reply);
-    return result;
+    if (reply) freeReplyObject(reply);
+    return value;
 }
 
 long long RedisClient::del(const std::string& key) {
-    if (!m_connected) {
-        std::cerr << "Redis未连接" << std::endl;
-        return -1;
-    }
+    if (!m_connected) return 0;
     redisReply* reply = (redisReply*)redisCommand(m_context, "DEL %s", key.c_str());
-    if (!reply) {
-        std::cerr << "DEL命令执行失败: " << m_context->errstr << std::endl;
-        return -1;
+    long long ret = 0;
+    if (reply && reply->type == REDIS_REPLY_INTEGER) {
+        ret = reply->integer;
     }
-    long long deleted = reply->integer;
-    freeReplyObject(reply);
-    return deleted;
+    if (reply) freeReplyObject(reply);
+    return ret;
 }
 
 bool RedisClient::exists(const std::string& key) {
-    if (!m_connected) {
-        std::cerr << "Redis未连接" << std::endl;
-        return false;
-    }
+    if (!m_connected) return false;
     redisReply* reply = (redisReply*)redisCommand(m_context, "EXISTS %s", key.c_str());
-    if (!reply) {
-        std::cerr << "EXISTS命令执行失败: " << m_context->errstr << std::endl;
-        return false;
-    }
-    bool exists = (reply->integer == 1);
-    freeReplyObject(reply);
-    return exists;
+    bool ret = reply && reply->type == REDIS_REPLY_INTEGER && reply->integer == 1;
+    if (reply) freeReplyObject(reply);
+    return ret;
 }
 
 bool RedisClient::expire(const std::string& key, int seconds) {
-    if (!m_connected) {
-        std::cerr << "Redis未连接" << std::endl;
-        return false;
-    }
+    if (!m_connected) return false;
     redisReply* reply = (redisReply*)redisCommand(m_context, "EXPIRE %s %d", key.c_str(), seconds);
-    if (!reply) {
-        std::cerr << "EXPIRE命令执行失败: " << m_context->errstr << std::endl;
-        return false;
-    }
-    bool success = (reply->integer == 1);
-    freeReplyObject(reply);
-    return success;
+    bool ret = reply && reply->type == REDIS_REPLY_INTEGER && reply->integer == 1;
+    if (reply) freeReplyObject(reply);
+    return ret;
 }
 
 long long RedisClient::lpush(const std::string& listKey, const std::string& value) {
-    if (!m_connected) {
-        std::cerr << "Redis未连接" << std::endl;
-        return -1;
-    }
+    if (!m_connected) return 0;
     redisReply* reply = (redisReply*)redisCommand(m_context, "LPUSH %s %s", listKey.c_str(), value.c_str());
-    if (!reply) {
-        std::cerr << "LPUSH命令执行失败: " << m_context->errstr << std::endl;
-        return -1;
+    long long ret = 0;
+    if (reply && reply->type == REDIS_REPLY_INTEGER) {
+        ret = reply->integer;
     }
-    long long length = reply->integer;
-    freeReplyObject(reply);
-    return length;
+    if (reply) freeReplyObject(reply);
+    return ret;
 }
 
 std::string RedisClient::rpop(const std::string& listKey) {
-    if (!m_connected) {
-        std::cerr << "Redis未连接" << std::endl;
-        return "";
-    }
+    if (!m_connected) return "";
     redisReply* reply = (redisReply*)redisCommand(m_context, "RPOP %s", listKey.c_str());
-    if (!reply) {
-        std::cerr << "RPOP命令执行失败: " << m_context->errstr << std::endl;
-        return "";
+    std::string value;
+    if (reply && reply->type == REDIS_REPLY_STRING) {
+        value = reply->str;
     }
-    std::string result;
-    if (reply->type == REDIS_REPLY_STRING) {
-        result = reply->str;
-    }
-    else if (reply->type == REDIS_REPLY_NIL) {
-        result = "";
-    }
-    else {
-        std::cerr << "RPOP命令返回意外类型: " << reply->type << std::endl;
-    }
-    freeReplyObject(reply);
-    return result;
+    if (reply) freeReplyObject(reply);
+    return value;
 }
 
 bool RedisClient::ltrim(const std::string& listKey, int start, int stop) {
     if (!m_connected) return false;
     redisReply* reply = (redisReply*)redisCommand(m_context, "LTRIM %s %d %d", listKey.c_str(), start, stop);
-    if (!reply) return false;
-    bool success = (reply->type == REDIS_REPLY_STATUS && std::string(reply->str) == "OK");
-    freeReplyObject(reply);
-    return success;
+    bool ret = reply && reply->type == REDIS_REPLY_STATUS && std::string(reply->str) == "OK";
+    if (reply) freeReplyObject(reply);
+    return ret;
 }
 
 std::vector<std::string> RedisClient::lrange(const std::string& listKey, int start, int stop) {
     std::vector<std::string> result;
-    if (!m_connected) {
-        std::cerr << "Redis未连接" << std::endl;
-        return result;
-    }
+    if (!m_connected) return result;
     redisReply* reply = (redisReply*)redisCommand(m_context, "LRANGE %s %d %d", listKey.c_str(), start, stop);
-    if (!reply) {
-        std::cerr << "LRANGE命令执行失败: " << m_context->errstr << std::endl;
-        return result;
-    }
-    if (reply->type == REDIS_REPLY_ARRAY) {
+    if (reply && reply->type == REDIS_REPLY_ARRAY) {
         for (size_t i = 0; i < reply->elements; ++i) {
-            redisReply* elem = reply->element[i];
-            if (elem->type == REDIS_REPLY_STRING) {
-                result.emplace_back(elem->str, elem->len);
+            if (reply->element[i]->type == REDIS_REPLY_STRING) {
+                result.push_back(reply->element[i]->str);
             }
         }
     }
-    else {
-        std::cerr << "LRANGE命令返回意外类型: " << reply->type << std::endl;
-    }
-    freeReplyObject(reply);
+    if (reply) freeReplyObject(reply);
     return result;
 }
-
-#else // _WIN32
-
-RedisClient::RedisClient() {}
-RedisClient::~RedisClient() {}
-
-bool RedisClient::connect(const std::string&, int, int) { return false; }
-void RedisClient::disconnect() {}
-bool RedisClient::isConnected() const { return false; }
-bool RedisClient::set(const std::string&, const std::string&) { return false; }
-std::string RedisClient::get(const std::string&) { return ""; }
-long long RedisClient::del(const std::string&) { return 0; }
-bool RedisClient::exists(const std::string&) { return false; }
-bool RedisClient::expire(const std::string&, int) { return false; }
-long long RedisClient::lpush(const std::string&, const std::string&) { return 0; }
-std::string RedisClient::rpop(const std::string&) { return ""; }
-bool RedisClient::ltrim(const std::string&, int, int) { return false; }
-std::vector<std::string> RedisClient::lrange(const std::string&, int, int) { return {}; }
-
-#endif

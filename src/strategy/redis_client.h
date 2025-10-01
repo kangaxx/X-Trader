@@ -4,11 +4,8 @@
 #include <string>
 #include <memory>
 #include <vector>
-
-// 仅在非 Windows 环境下包含 hiredis 头文件
-#ifndef _WIN32
 #include <hiredis/hiredis.h>
-#endif
+
 
 // Redis客户端单例类
 class RedisClient {
@@ -39,10 +36,8 @@ private:
     RedisClient();
     ~RedisClient();
 
-#ifndef _WIN32
     redisContext* m_context;
     bool m_connected;
-#endif
+
 };
 
-#endif
