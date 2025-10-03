@@ -63,41 +63,48 @@ void simp_turtle_trading_strategy::on_tick(const MarketData& tick)
             // --- 写入CSV ---
             std::string dir_path = "/root/future_data";
             std::error_code ec;
-            if (!std::filesystem::exists(dir_path)) {
+			bool path_exists = std::filesystem::exists(dir_path);
+            if (!path_exists) {
                 if (!std::filesystem::create_directories(dir_path, ec) || ec) {
                     // 创建目录失败，跳过写csv
-                    goto after_csv;
+					Logger::get_instance().error("create directory " + dir_path + " failed: " + ec.message());
+                }
+                else
+					path_exists = true;
+            }
+			// 目录存在或创建成功，继续写csv
+            if (path_exists)
+            {
+                std::string symbol_prefix = _contract.substr(0, 2);
+                std::string csv_path = dir_path + "/" + symbol_prefix + "9999.CSV";
+                bool file_exists = std::filesystem::exists(csv_path);
+
+                std::ofstream ofs(csv_path, std::ios::app);
+                if (!ofs.is_open()) {
+                    // 文件打开失败，跳过写csv
+                    Logger::get_instance().error("open file " + csv_path + " failed");
+                }
+                else {
+                    if (!file_exists) {
+                        ofs << "date,open,high,low,close,volumn,money,open_interest,symbol\n";
+                    }
+                    char date_buf[32] = { 0 };
+                    std::tm* tm_ptr = std::localtime(&cur_bar.datetime);
+                    std::strftime(date_buf, sizeof(date_buf), "%Y-%m-%d %H:%M", tm_ptr);
+
+                    double money = cur_bar.close * cur_bar.volume;
+                    ofs << date_buf << ","
+                        << cur_bar.open << ","
+                        << cur_bar.high << ","
+                        << cur_bar.low << ","
+                        << cur_bar.close << ","
+                        << cur_bar.volume << ","
+                        << money << ","
+                        << tick.open_interest << ","
+                        << _contract << "\n";
+                    ofs.close();
                 }
             }
-            std::string symbol_prefix = _contract.substr(0, 2);
-            std::string csv_path = dir_path + "/" + symbol_prefix + "9999.CSV";
-            bool file_exists = std::filesystem::exists(csv_path);
-
-            std::ofstream ofs(csv_path, std::ios::app);
-            if (!ofs.is_open()) {
-                // 文件打开失败，跳过写csv
-                goto after_csv;
-            }
-            if (!file_exists) {
-                ofs << "date,open,high,low,close,volumn,money,open_interest,symbol\n";
-            }
-            char date_buf[32] = { 0 };
-            std::tm* tm_ptr = std::localtime(&cur_bar.datetime);
-            std::strftime(date_buf, sizeof(date_buf), "%Y-%m-%d %H:%M", tm_ptr);
-
-            double money = cur_bar.close * cur_bar.volume;
-            ofs << date_buf << ","
-                << cur_bar.open << ","
-                << cur_bar.high << ","
-                << cur_bar.low << ","
-                << cur_bar.close << ","
-                << cur_bar.volume << ","
-                << money << ","
-                << tick.open_interest << ","
-                << _contract << "\n";
-            ofs.close();
-
-            after_csv:
             Json::Value bar_json;
             bar_json["datetime"] = (Json::Int64)cur_bar.datetime;
             bar_json["open"] = cur_bar.open;
