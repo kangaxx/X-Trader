@@ -54,9 +54,13 @@ orderref_t frame::insert_order(const stratid_t sid, eOrderFlag order_flag, const
     auto id = _realtime->insert_order(order_flag, contract, dir_offset, price, volume);
     if (id != null_orderref) {
         _order_to_strategy_map[id] = sid;
-        Logger::get_instance().info("frame::insert_order: order submitted, order_ref={}, strategy_id={}", id, sid);
+        std::ostringstream oss;
+        oss2 << "frame::insert_order: order submitted, order_ref=" << id << ", strategy_id=" << sid;
+        Logger::get_instance().info(oss.str());
     } else {
-        Logger::get_instance().error("frame::insert_order: order submit failed, strategy_id={}, contract={}", sid, contract);
+        std::ostringstream oss;
+        oss3 << "frame::insert_order: order submit failed, strategy_id=" << sid << ", contract=" << contract;
+        Logger::get_instance().error(oss.str());
     }
     return id;
 }
