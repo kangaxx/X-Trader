@@ -7,122 +7,98 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <filesystem>
 
-// 日志单例类，首字母大写
 class Logger {
 public:
-    // 禁用拷贝构造和赋值运算符
     Logger(const Logger&) = delete;
     Logger& operator=(const Logger&) = delete;
-
-    // 禁用移动构造和移动赋值
     Logger(Logger&&) = delete;
     Logger& operator=(Logger&&) = delete;
 
-    // 获取单例实例
     static Logger& get_instance() {
         static Logger instance;
         return instance;
     }
 
-    // 设置日志级别
     void setLevel(spdlog::level::level_enum level) {
-        logger_->set_level(level);
+        for (auto& l : loggers_) {
+            l->set_level(level);
+        }
     }
 
-    // 日志输出接口（const char* 格式字符串）
-    template<typename... Args>
-    void trace(const char* fmt, const Args&... args) {
-        logger_->trace(fmt, args...);
-    }
+    // 带格式参数的日志接口
     template<typename... Args>
     void debug(const char* fmt, const Args&... args) {
-        logger_->debug(fmt, args...);
+        debug_logger_->debug(fmt, args...);
     }
     template<typename... Args>
     void info(const char* fmt, const Args&... args) {
-        logger_->info(fmt, args...);
+        info_logger_->info(fmt, args...);
     }
     template<typename... Args>
     void warn(const char* fmt, const Args&... args) {
-        logger_->warn(fmt, args...);
+        warn_logger_->warn(fmt, args...);
     }
     template<typename... Args>
     void error(const char* fmt, const Args&... args) {
-        logger_->error(fmt, args...);
+        error_logger_->error(fmt, args...);
+    }
+    template<typename... Args>
+    void trace(const char* fmt, const Args&... args) {
+        debug_logger_->trace(fmt, args...);
     }
     template<typename... Args>
     void critical(const char* fmt, const Args&... args) {
-        logger_->critical(fmt, args...);
+        error_logger_->critical(fmt, args...);
     }
 
-    // 日志输出接口（std::string 格式字符串重载，无Args参数）
-    void trace(const std::string& msg) {
-        logger_->trace(msg.c_str());
-    }
-    void debug(const std::string& msg) {
-        logger_->debug(msg.c_str());
-    }
-    void info(const std::string& msg) {
-        logger_->info(msg.c_str());
-    }
-    void warn(const std::string& msg) {
-        logger_->warn(msg.c_str());
-    }
-    void error(const std::string& msg) {
-        logger_->error(msg.c_str());
-    }
-    void critical(const std::string& msg) {
-        logger_->critical(msg.c_str());
-    }
+    // std::string重载
+    void debug(const std::string& msg) { debug_logger_->debug(msg.c_str()); }
+    void info(const std::string& msg) { info_logger_->info(msg.c_str()); }
+    void warn(const std::string& msg) { warn_logger_->warn(msg.c_str()); }
+    void error(const std::string& msg) { error_logger_->error(msg.c_str()); }
+    void trace(const std::string& msg) { debug_logger_->trace(msg.c_str()); }
+    void critical(const std::string& msg) { error_logger_->critical(msg.c_str()); }
 
 private:
-    // 私有构造函数
-    Logger(const std::string& logger_name = "Logger",
-        const std::string& file_pattern = "logs/app.log",
-        int hour = 0, int minute = 0) {
-        // 创建日志目录
-        createLogDirectory(file_pattern);
+    Logger() {
+        std::string log_dir = "logs";
+        if (!std::filesystem::exists(log_dir)) {
+            std::filesystem::create_directories(log_dir);
+        }
+        // 文件名
+        std::string debug_file = log_dir + "/app_debug.log";
+        std::string info_file  = log_dir + "/app_info.log";
+        std::string warn_file  = log_dir + "/app_warn.log";
+        std::string error_file = log_dir + "/app_error.log";
 
-        // 创建日志接收器
+        // sink
         auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-        auto file_sink = std::make_shared<spdlog::sinks::daily_file_sink_mt>(
-            file_pattern, hour, minute, false  // 最后一个参数false表示不延迟创建
-        );
+        auto debug_sink = std::make_shared<spdlog::sinks::daily_file_sink_mt>(debug_file, 0, 0, false);
+        auto info_sink  = std::make_shared<spdlog::sinks::daily_file_sink_mt>(info_file, 0, 0, false);
+        auto warn_sink  = std::make_shared<spdlog::sinks::daily_file_sink_mt>(warn_file, 0, 0, false);
+        auto error_sink = std::make_shared<spdlog::sinks::daily_file_sink_mt>(error_file, 0, 0, false);
 
-        // 多接收器组合
-        spdlog::sinks_init_list sink_list = { console_sink, file_sink };
+        debug_logger_ = std::make_shared<spdlog::logger>("debug_logger", spdlog::sinks_init_list{console_sink, debug_sink});
+        info_logger_  = std::make_shared<spdlog::logger>("info_logger",  spdlog::sinks_init_list{console_sink, info_sink});
+        warn_logger_  = std::make_shared<spdlog::logger>("warn_logger",  spdlog::sinks_init_list{console_sink, warn_sink});
+        error_logger_ = std::make_shared<spdlog::logger>("error_logger", spdlog::sinks_init_list{console_sink, error_sink});
 
-        // 创建日志器
-        logger_ = std::make_shared<spdlog::logger>(logger_name, sink_list);
-
-        // 设置日志格式
-        logger_->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] %v");
-
-        // 设置默认日志级别
-        logger_->set_level(spdlog::level::info);
-
-        // 强制刷新策略
-        logger_->flush_on(spdlog::level::warn);
-
-        // 写入一条初始化日志，确保文件被创建
-        logger_->info("Logger initialized");
+        for (auto& l : {debug_logger_, info_logger_, warn_logger_, error_logger_}) {
+            l->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] %v");
+            l->set_level(spdlog::level::debug);
+            l->flush_on(spdlog::level::warn);
+        }
+        loggers_ = {debug_logger_, info_logger_, warn_logger_, error_logger_};
+        info_logger_->info("Logger initialized");
     }
 
-    // 析构函数
     ~Logger() {
         spdlog::shutdown();
     }
 
-    // 创建日志目录
-    void createLogDirectory(const std::string& file_pattern) {
-        std::filesystem::path log_path(file_pattern);
-        std::filesystem::path log_dir = log_path.parent_path();
-
-        if (!log_dir.empty() && !std::filesystem::exists(log_dir)) {
-            std::filesystem::create_directories(log_dir);
-        }
-    }
-
-    // 日志器对象
-    std::shared_ptr<spdlog::logger> logger_;
+    std::vector<std::shared_ptr<spdlog::logger>> loggers_;
+    std::shared_ptr<spdlog::logger> debug_logger_;
+    std::shared_ptr<spdlog::logger> info_logger_;
+    std::shared_ptr<spdlog::logger> warn_logger_;
+    std::shared_ptr<spdlog::logger> error_logger_;
 };
