@@ -483,3 +483,13 @@ inline std::string geteDirOffsetString(eDirOffset t)
     }
     return "Unknown";
 }
+
+inline std::string geteOrderSubmitStatusString(eOrderSubmitStatus t)
+{
+	return eOrderSubmitStatusToString[t];
+}
+
+inline std::string geteOrderStatusString(eOrderStatus t)
+{
+	return eOrderStatusToString[t];
+}
