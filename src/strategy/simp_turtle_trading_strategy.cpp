@@ -3,7 +3,7 @@
 #include <deque>
 #include "redis_client.h"
 #include <jsoncpp/json/json.h>
-
+#include <fstream>
 
 // ²ßÂÔ²ÎÊı
 struct StrategyParams {
