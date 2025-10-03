@@ -55,11 +55,11 @@ orderref_t frame::insert_order(const stratid_t sid, eOrderFlag order_flag, const
     if (id != null_orderref) {
         _order_to_strategy_map[id] = sid;
         std::ostringstream oss;
-        oss2 << "frame::insert_order: order submitted, order_ref=" << id << ", strategy_id=" << sid;
+        oss << "frame::insert_order: order submitted, order_ref=" << id << ", strategy_id=" << sid;
         Logger::get_instance().info(oss.str());
     } else {
         std::ostringstream oss;
-        oss3 << "frame::insert_order: order submit failed, strategy_id=" << sid << ", contract=" << contract;
+        oss << "frame::insert_order: order submit failed, strategy_id=" << sid << ", contract=" << contract;
         Logger::get_instance().error(oss.str());
     }
     return id;
