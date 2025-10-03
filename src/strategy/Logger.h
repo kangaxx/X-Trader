@@ -78,7 +78,7 @@ public:
 private:
     // 私有构造函数
     Logger(const std::string& logger_name = "Logger",
-        const std::string& file_pattern = "logs/%Y-%m-%d.log",
+        const std::string& file_pattern = "logs/app.log",
         int hour = 0, int minute = 0) {
         // 创建日志目录
         createLogDirectory(file_pattern);
