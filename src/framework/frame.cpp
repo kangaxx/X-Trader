@@ -1,6 +1,7 @@
 #include "frame.h"
 #include "../strategy/Logger.h"
 #include <sstream>
+#include "../include/data_struct.h" // 确保包含了eOrderFlag和eDirOffset的toString函数声明
 
 /**
  * @brief Constructor, initialize frame object and create realtime instance
@@ -19,7 +20,7 @@ frame::~frame()
 {
 	if (_realtime)
 	{
-		Logger::get_instance().info(std::string("frame::~frame delete realtime instance"));
+		Logger::get_instance().debug(std::string("frame::~frame delete realtime instance"));
 		delete _realtime; _realtime = nullptr;
 	}
 }
@@ -36,12 +37,28 @@ frame::~frame()
  */
 orderref_t frame::insert_order(const stratid_t sid, eOrderFlag order_flag, const std::string& contract, eDirOffset dir_offset, double price, int volume)
 {
-	std::string msg = "frame::insert_order call _realtime->insert_order, contract=" + contract +
-		", price=" + std::to_string(price) + ", volume=" + std::to_string(volume);
-	Logger::get_instance().info(msg);
-	auto id = _realtime->insert_order(order_flag, contract, dir_offset, price, volume);
-	if (id != null_orderref) { _order_to_strategy_map[id] = sid; }
-	return id;
+    // 使用枚举转字符串工具函数
+    std::string order_flag_str = geteOrderFlagString(order_flag);
+    std::string dir_offset_str = geteDirOffsetString(dir_offset);
+
+    std::ostringstream oss;
+    oss << "frame::insert_order: "
+        << "strategy_id=" << sid
+        << ", contract=" << contract
+        << ", order_flag=" << order_flag_str
+        << ", dir_offset=" << dir_offset_str
+        << ", price=" << price
+        << ", volume=" << volume;
+    Logger::get_instance().info(oss.str());
+
+    auto id = _realtime->insert_order(order_flag, contract, dir_offset, price, volume);
+    if (id != null_orderref) {
+        _order_to_strategy_map[id] = sid;
+        Logger::get_instance().info("frame::insert_order: order submitted, order_ref={}, strategy_id={}", id, sid);
+    } else {
+        Logger::get_instance().error("frame::insert_order: order submit failed, strategy_id={}, contract={}", sid, contract);
+    }
+    return id;
 }
 
 /**
@@ -99,7 +116,7 @@ void frame::register_bar_receiver(const std::string& contract, uint32_t period, 
 {
 	std::string msg = "frame::register_bar_receiver create resample, contract=" + contract +
 		", period=" + std::to_string(period);
-	Logger::get_instance().info(msg);
+	Logger::get_instance().debug(msg);
 	auto iter = _resample[contract].find(period);
 	if (iter == _resample[contract].end())
 	{

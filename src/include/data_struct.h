@@ -434,11 +434,6 @@ inline std::map<eDirOffset, std::string> eDirOffsetToString =
 	{eDirOffset::BuyCloseYesterday, "BuyCloseYesterday"},{eDirOffset::SellCloseYesterday, "SellCloseYesterday"}
 };
 
-inline std::string geteDirOffsetString(eDirOffset t)
-{
-	return eDirOffsetToString[t];
-}
-
 inline std::map<eOrderSubmitStatus, std::string> eOrderSubmitStatusToString =
 {
 	{eOrderSubmitStatus::InsertSubmitted, "InsertSubmitted"},
@@ -449,11 +444,6 @@ inline std::map<eOrderSubmitStatus, std::string> eOrderSubmitStatusToString =
 	{eOrderSubmitStatus::CancelRejected, "CancelRejected"},
 	{eOrderSubmitStatus::ModifyRejected, "ModifyRejected"}
 };
-
-inline std::string geteOrderSubmitStatusString(eOrderSubmitStatus t)
-{
-	return eOrderSubmitStatusToString[t];
-}
 
 inline std::map<eOrderStatus, std::string> eOrderStatusToString =
 {
@@ -468,11 +458,6 @@ inline std::map<eOrderStatus, std::string> eOrderStatusToString =
 	{eOrderStatus::Touched, "Touched"}
 };
 
-inline std::string geteOrderStatusString(eOrderStatus t)
-{
-	return eOrderStatusToString[t];
-}
-
 inline std::map<eOrderFlag, std::string> eOrderFlagToString =
 {
 	{eOrderFlag::Limit, "Limit"},
@@ -483,5 +468,18 @@ inline std::map<eOrderFlag, std::string> eOrderFlagToString =
 
 inline std::string geteOrderFlagString(eOrderFlag t)
 {
-	return eOrderFlagToString[t];
+    auto it = eOrderFlagToString.find(t);
+    if (it != eOrderFlagToString.end()) {
+        return it->second;
+    }
+    return "Unknown";
+}
+
+inline std::string geteDirOffsetString(eDirOffset t)
+{
+    auto it = eDirOffsetToString.find(t);
+    if (it != eDirOffsetToString.end()) {
+        return it->second;
+    }
+    return "Unknown";
 }
