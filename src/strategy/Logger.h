@@ -32,7 +32,8 @@ public:
     }
     template<typename... Args>
     void info(const char* fmt, const Args&... args) {
-        info_logger_->info(fmt, args...);
+        std::string msg = fmt::format(fmt, args...);
+        info_logger_->info(msg);
     }
     template<typename... Args>
     void warn(const char* fmt, const Args&... args) {
