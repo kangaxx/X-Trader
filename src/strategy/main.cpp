@@ -19,17 +19,20 @@
 
 void start_running(const char* filename)
 {
-	Logger::get_instance().info("Work server started!");
+	std::string str = "Work server started!";
+	Logger::get_instance().info(str);
 	CurlSender sender("./ini/config.ini");
 	sender.send("Work Server Start");
 	RedisClient& redis = RedisClient::getInstance();
 	if (!redis.connect("127.0.0.1", 6379)) {
-		Logger::get_instance().error( "can not connect to redis server 127.0.0.1:6379!");
+		str = "can not connect to redis server 127.0.0.1:6379!";
+		Logger::get_instance().error(str);
 		return;
 	}
 	else
 	{
-		Logger::get_instance().info("connect to redis server 127.0.0.1:6379 success");
+		str = "connect to redis server 127.0.0.1:6379 success";
+		Logger::get_instance().info(str);
 	}
 	frame run(filename);
 	std::vector<std::shared_ptr<strategy>> strategys;
