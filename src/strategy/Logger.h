@@ -25,66 +25,6 @@ public:
         }
     }
 
-    // 带格式参数的日志接口
-    template<typename... Args>
-    void debug(const char* fmt, const Args&... args) {
-        debug_logger_->debug(fmt, args...);
-    }
-
-    template<typename... Args>
-    void debug(fmt::format_string<Args...> fmt, const Args&... args) {
-        debug_logger_->debug(fmt, args...);
-    }
-
-    template<typename... Args>
-    void info(const char* fmt, const Args&... args) {
-        info_logger_->info(fmt, args...);
-    }
-
-    template<typename... Args>
-    void info(fmt::format_string<Args...> fmt, const Args&... args) {
-        info_logger_->info(fmt, args...);
-    }
-
-    template<typename... Args>
-    void warn(const char* fmt, const Args&... args) {
-        warn_logger_->warn(fmt, args...);
-    }
-
-    template<typename... Args>
-    void warn(fmt::format_string<Args...> fmt, const Args&... args) {
-        warn_logger_->warn(fmt, args...);
-    }
-
-    template<typename... Args>
-    void error(const char* fmt, const Args&... args) {
-        error_logger_->error(fmt, args...);
-    }
-
-    template<typename... Args>
-    void error(fmt::format_string<Args...> fmt, const Args&... args) {
-        error_logger_->error(fmt, args...);
-    }
-
-    template<typename... Args>
-    void trace(const char* fmt, const Args&... args) {
-        debug_logger_->trace(fmt, args...);
-    }
-
-    template<typename... Args>
-    void trace(fmt::format_string<Args...> fmt, const Args&... args) {
-        debug_logger_->trace(fmt, args...);
-    }
-
-    template<typename... Args>
-    void critical(const char* fmt, const Args&... args) {
-        error_logger_->critical(fmt, args...);
-    }
-
-    template<typename... Args>
-    void critical(fmt::format_string<Args...> fmt, const Args&... args) {
-        error_logger_->critical(fmt, args...);
-    }
 
     // std::string重载
     void debug(const std::string& msg) { debug_logger_->debug(msg.c_str()); }
@@ -130,6 +70,41 @@ private:
     ~Logger() {
         spdlog::shutdown();
     }
+
+
+    // 带格式参数的日志接口
+    // 这批接口容易触发const expression警告，原因是spdlog的日志接口被声明为const成员函数
+    // 所以改成private成员函数
+    template<typename... Args>
+    void debug(const char* fmt, const Args&... args) {
+        debug_logger_->debug(fmt, args...);
+    }
+
+    template<typename... Args>
+    void info(const char* fmt, const Args&... args) {
+        info_logger_->info(fmt, args...);
+    }
+
+    template<typename... Args>
+    void warn(const char* fmt, const Args&... args) {
+        warn_logger_->warn(fmt, args...);
+    }
+
+    template<typename... Args>
+    void error(const char* fmt, const Args&... args) {
+        error_logger_->error(fmt, args...);
+    }
+
+    template<typename... Args>
+    void trace(const char* fmt, const Args&... args) {
+        debug_logger_->trace(fmt, args...);
+    }
+
+    template<typename... Args>
+    void critical(const char* fmt, const Args&... args) {
+        error_logger_->critical(fmt, args...);
+    }
+
 
     std::vector<std::shared_ptr<spdlog::logger>> loggers_;
     std::shared_ptr<spdlog::logger> debug_logger_;

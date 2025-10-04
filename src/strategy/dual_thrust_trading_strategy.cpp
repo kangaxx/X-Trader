@@ -20,7 +20,7 @@ dual_thrust_trading_strategy::dual_thrust_trading_strategy(stratid_t id, frame& 
 
 void dual_thrust_trading_strategy::on_tick(const MarketData& tick) {
     // 设置收盘前一分钟平仓标志
-    if (strncmp(tick.update_time, close_time, 5) == 0) {
+    if (strncmp(tick.update_time, end_time, 5) == 0) {
         _is_closing = true;
         std::ostringstream oss;
         oss << "Strategy " << get_id() << " start closing positions at " << tick.update_time;
@@ -65,7 +65,7 @@ void dual_thrust_trading_strategy::on_tick(const MarketData& tick) {
 // 订单回报处理：设置撤单条件
 void dual_thrust_trading_strategy::on_order(const Order& order)
 {
-    Logger::get_instance().info("DualThrust on_order triggered: order_ref={}", order.order_ref);
+    Logger::get_instance().info("DualThrust on_order triggered");
 
     // 记录买开/卖开挂单
     if (order.dir_offset == eDirOffset::BuyOpen) {
@@ -199,42 +199,58 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
         if (bar.close > buy_line && _sim_pos.long_pos == 0) {
             _sim_pos.long_pos = _once_vol;
             _sim_pos.long_entry = bar.close;
-            Logger::get_instance().info("DualThrust SIM buy open, price={}, buy_line={}", bar.close, buy_line);
+            std::ostringstream oss;
+            oss << "DualThrust SIM buy open, price=" << bar.close << ", buy_line=" << buy_line;
+            Logger::get_instance().info(oss.str());
         }
         if (bar.close < sell_line && _sim_pos.short_pos == 0) {
             _sim_pos.short_pos = _once_vol;
             _sim_pos.short_entry = bar.close;
-            Logger::get_instance().info("DualThrust SIM sell open, price={}, sell_line={}", bar.close, sell_line);
+            std::ostringstream oss;
+            oss << "DualThrust SIM sell open, price=" << bar.close << ", sell_line=" << sell_line;
+            Logger::get_instance().info(oss.str());
         }
         if (_sim_pos.long_pos > 0 && bar.close < sell_line) {
             double profit = (bar.close - _sim_pos.long_entry) * _sim_pos.long_pos;
             _sim_pos.profit += profit;
-            Logger::get_instance().info("DualThrust SIM close long, price={}, sell_line={}, profit={}", bar.close, sell_line, profit);
+            std::ostringstream oss;
+            oss << "DualThrust SIM close long, price=" << bar.close << ", sell_line=" << sell_line << ", profit=" << profit;
+            Logger::get_instance().info(oss.str());
             _sim_pos.long_pos = 0;
         }
         if (_sim_pos.short_pos > 0 && bar.close > buy_line) {
             double profit = (_sim_pos.short_entry - bar.close) * _sim_pos.short_pos;
             _sim_pos.profit += profit;
-            Logger::get_instance().info("DualThrust SIM close short, price={}, buy_line={}, profit={}", bar.close, buy_line, profit);
+            std::ostringstream oss;
+            oss << "DualThrust SIM close short, price=" << bar.close << ", buy_line=" << buy_line << ", profit=" << profit;
+            Logger::get_instance().info(oss.str());
             _sim_pos.short_pos = 0;
         }
     } else {
         const auto& posi = get_position(_contract);
         if (bar.close > buy_line && posi.long_.position == 0) {
             buy_open(eOrderFlag::Limit, _contract, bar.close, _once_vol);
-            Logger::get_instance().info("DualThrust buy open, price={}, buy_line={}", bar.close, buy_line);
+            std::ostringstream oss;
+            oss << "DualThrust buy open, price=" << bar.close << ", buy_line=" << buy_line;
+            Logger::get_instance().info(oss.str());
         }
         if (bar.close < sell_line && posi.short_.position == 0) {
             sell_open(eOrderFlag::Limit, _contract, bar.close, _once_vol);
-            Logger::get_instance().info("DualThrust sell open, price={}, sell_line={}", bar.close, sell_line);
+            std::ostringstream oss;
+            oss << "DualThrust sell open, price=" << bar.close << ", sell_line=" << sell_line;
+            Logger::get_instance().info(oss.str());
         }
         if (posi.long_.position > 0 && bar.close < sell_line) {
             sell_close(eOrderFlag::Limit, _contract, bar.close, posi.long_.position);
-            Logger::get_instance().info("DualThrust close long, price={}, sell_line={}", bar.close, sell_line);
+            std::ostringstream oss;
+            oss << "DualThrust close long, price=" << bar.close << ", sell_line=" << sell_line;
+            Logger::get_instance().info(oss.str());
         }
         if (posi.short_.position > 0 && bar.close > buy_line) {
             buy_close(eOrderFlag::Limit, _contract, bar.close, posi.short_.position);
-            Logger::get_instance().info("DualThrust close short, price={}, buy_line={}", bar.close, buy_line);
+            std::ostringstream oss;
+            oss << "DualThrust close short, price=" << bar.close << ", buy_line=" << buy_line;
+            Logger::get_instance().info(oss.str());
         }
     }
 }
@@ -244,34 +260,44 @@ void dual_thrust_trading_strategy::force_close_sim(const DTBarData& bar) {
     if (_sim_pos.long_pos > 0) {
         profit = (bar.close - _sim_pos.long_entry) * _sim_pos.long_pos;
         _sim_pos.profit += profit;
-        Logger::get_instance().info("DualThrust SIM force close long, price={}, profit={}", bar.close, profit);
+        std::ostringstream oss;
+        oss << "DualThrust SIM force close long, price=" << bar.close << ", profit=" << profit;
+        Logger::get_instance().info(oss.str());
         _sim_pos.long_pos = 0;
     }
     if (_sim_pos.short_pos > 0) {
         profit = (_sim_pos.short_entry - bar.close) * _sim_pos.short_pos;
         _sim_pos.profit += profit;
-        Logger::get_instance().info("DualThrust SIM force close short, price={}, profit={}", bar.close, profit);
+        std::ostringstream oss;
+        oss << "DualThrust SIM force close short, price=" << bar.close << ", profit=" << profit;
+        Logger::get_instance().info(oss.str());
         _sim_pos.short_pos = 0;
     }
-    Logger::get_instance().info("DualThrust SIM total profit for the day: {}", _sim_pos.profit);
+    std::ostringstream oss;
+    oss << "DualThrust SIM total profit for the day: " << _sim_pos.profit;
+    Logger::get_instance().info(oss.str());
 }
 
 void dual_thrust_trading_strategy::force_close_realtime(const DTBarData& bar) {
     const auto& posi = get_position(_contract);
     if (posi.long_.position > 0) {
         sell_close(eOrderFlag::Limit, _contract, bar.close, posi.long_.position);
-        Logger::get_instance().info("DualThrust REALTIME force close long, price={}, volume={}", bar.close, posi.long_.position);
+        std::ostringstream oss;
+        oss << "DualThrust REALTIME force close long, price=" << bar.close << ", volume=" << posi.long_.position;
+        Logger::get_instance().info(oss.str());
     }
     if (posi.short_.position > 0) {
         buy_close(eOrderFlag::Limit, _contract, bar.close, posi.short_.position);
-        Logger::get_instance().info("DualThrust REALTIME force close short, price={}, volume={}", bar.close, posi.short_.position);
+        std::ostringstream oss;
+        oss << "DualThrust REALTIME force close short, price=" << bar.close << ", volume=" << posi.short_.position;
+        Logger::get_instance().info(oss.str());
     }
 }
 
 void dual_thrust_trading_strategy::load_history(const std::string& file) {
     std::ifstream ifs(file);
     if (!ifs.is_open()) {
-        Logger::get_instance().error("DualThrust: cannot open history file {}", file);
+        Logger::get_instance().error("DualThrust: cannot open history file : " + file);
         return;
     }
     std::string line;
@@ -289,7 +315,9 @@ void dual_thrust_trading_strategy::load_history(const std::string& file) {
         std::getline(iss, token, ','); bar.volume = std::stoi(token);
         _history.push_back(bar);
     }
-    Logger::get_instance().info("DualThrust: loaded {} bars from {}", _history.size(), file);
+    std::ostringstream oss;
+    oss << "DualThrust: loaded " << _history.size() << " bars from " << file;
+    Logger::get_instance().info(oss.str());
 }
 
 void dual_thrust_trading_strategy::prepare_simulation() {
@@ -304,6 +332,9 @@ void dual_thrust_trading_strategy::prepare_simulation() {
     _base_bars.assign(_history.begin() + (start_idx - _base_days), _history.begin() + start_idx);
     _sim_bars.assign(_history.begin() + start_idx, _history.end());
     _bar_cursor = 0;
-    Logger::get_instance().info("DualThrust: simulation start at {}, base days: {}, sim bars: {}",
-        _sim_start_date, _base_days, _sim_bars.size());
+    std::ostringstream oss;
+    oss << "DualThrust: simulation start at " << _sim_start_date
+        << ", base days: " << _base_days
+        << ", sim bars: " << _sim_bars.size();
+    Logger::get_instance().info(oss.str());
 }
