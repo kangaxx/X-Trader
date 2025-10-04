@@ -19,11 +19,22 @@ dual_thrust_trading_strategy::dual_thrust_trading_strategy(stratid_t id, frame& 
 }
 
 void dual_thrust_trading_strategy::on_tick(const MarketData& tick) {
-    // 设置收盘前一分钟平仓标志
-    if (strncmp(tick.update_time, _end_time, 5) == 0) {
+    // 在_end_time前一分钟设置_is_closing标志
+    std::string tick_minute = std::string(tick.update_time).substr(0, 5);
+    int end_hour = 0, end_min = 0;
+    sscanf(_end_time.c_str(), "%d:%d", &end_hour, &end_min);
+    int close_hour = end_hour, close_min = end_min - 1;
+    if (close_min < 0) {
+        close_min += 60;
+        close_hour -= 1;
+    }
+    char close_time[6];
+    snprintf(close_time, sizeof(close_time), "%02d:%02d", close_hour, close_min);
+    if (tick_minute == close_time) {
         _is_closing = true;
         std::ostringstream oss;
-        oss << "Strategy " << get_id() << " start closing positions at " << tick.update_time;
+        oss << "Strategy " << get_id() << " start closing positions at " << tick.update_time
+            << " (triggered by close_time=" << close_time << ")";
         Logger::get_instance().info(oss.str());
     }
 
@@ -37,7 +48,6 @@ void dual_thrust_trading_strategy::on_tick(const MarketData& tick) {
             }
         }
     } else {
-        std::string tick_minute = std::string(tick.update_time).substr(0, 5);
         if (_cur_minute.empty() || tick_minute != _cur_minute) {
             if (!_cur_minute.empty()) {
                 on_bar(_cur_bar);
