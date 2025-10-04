@@ -20,7 +20,7 @@ dual_thrust_trading_strategy::dual_thrust_trading_strategy(stratid_t id, frame& 
 
 void dual_thrust_trading_strategy::on_tick(const MarketData& tick) {
     // 设置收盘前一分钟平仓标志
-    if (strncmp(tick.update_time, end_time, 5) == 0) {
+    if (strncmp(tick.update_time, _end_time, 5) == 0) {
         _is_closing = true;
         std::ostringstream oss;
         oss << "Strategy " << get_id() << " start closing positions at " << tick.update_time;
@@ -65,7 +65,7 @@ void dual_thrust_trading_strategy::on_tick(const MarketData& tick) {
 // 订单回报处理：设置撤单条件
 void dual_thrust_trading_strategy::on_order(const Order& order)
 {
-    Logger::get_instance().info("DualThrust on_order triggered");
+    Logger::get_instance().info(std::to_string("DualThrust on_order triggered"));
 
     // 记录买开/卖开挂单
     if (order.dir_offset == eDirOffset::BuyOpen) {
@@ -84,15 +84,6 @@ void dual_thrust_trading_strategy::on_order(const Order& order)
         }
         _buy_open_orders.clear();
         _sell_open_orders.clear();
-    }
-
-    // 设置撤单条件（原有逻辑）
-    if (order.order_ref == _buy_orderref || order.order_ref == _sell_orderref)
-    {
-        set_cancel_condition(order.order_ref, [this](orderref_t order_id)->bool {
-            if (_is_closing) { return true; }
-            return false;
-        });
     }
 }
 
@@ -326,7 +317,7 @@ void dual_thrust_trading_strategy::prepare_simulation() {
         if (_history[start_idx].date_str >= _sim_start_date) break;
     }
     if (start_idx < _base_days) {
-        Logger::get_instance().error("DualThrust: not enough base days before sim_start_date");
+        Logger::get_instance().error(std::to_string("DualThrust: not enough base days before sim_start_date"));
         return;
     }
     _base_bars.assign(_history.begin() + (start_idx - _base_days), _history.begin() + start_idx);
