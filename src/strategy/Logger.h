@@ -30,24 +30,59 @@ public:
     void debug(const char* fmt, const Args&... args) {
         debug_logger_->debug(fmt, args...);
     }
+
+    template<typename... Args>
+    void debug(fmt::format_string<Args...> fmt, const Args&... args) {
+        debug_logger_->debug(fmt, args...);
+    }
+
     template<typename... Args>
     void info(const char* fmt, const Args&... args) {
         info_logger_->info(fmt, args...);
     }
+
+    template<typename... Args>
+    void info(fmt::format_string<Args...> fmt, const Args&... args) {
+        info_logger_->info(fmt, args...);
+    }
+
     template<typename... Args>
     void warn(const char* fmt, const Args&... args) {
         warn_logger_->warn(fmt, args...);
     }
+
+    template<typename... Args>
+    void warn(fmt::format_string<Args...> fmt, const Args&... args) {
+        warn_logger_->warn(fmt, args...);
+    }
+
     template<typename... Args>
     void error(const char* fmt, const Args&... args) {
         error_logger_->error(fmt, args...);
     }
+
+    template<typename... Args>
+    void error(fmt::format_string<Args...> fmt, const Args&... args) {
+        error_logger_->error(fmt, args...);
+    }
+
     template<typename... Args>
     void trace(const char* fmt, const Args&... args) {
         debug_logger_->trace(fmt, args...);
     }
+
+    template<typename... Args>
+    void trace(fmt::format_string<Args...> fmt, const Args&... args) {
+        debug_logger_->trace(fmt, args...);
+    }
+
     template<typename... Args>
     void critical(const char* fmt, const Args&... args) {
+        error_logger_->critical(fmt, args...);
+    }
+
+    template<typename... Args>
+    void critical(fmt::format_string<Args...> fmt, const Args&... args) {
         error_logger_->critical(fmt, args...);
     }
 

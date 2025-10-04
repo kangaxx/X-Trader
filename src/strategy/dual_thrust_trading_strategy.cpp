@@ -3,6 +3,7 @@
 #include <sstream>
 #include <ctime>
 #include <iomanip>
+#include <set>
 
 dual_thrust_trading_strategy::dual_thrust_trading_strategy(stratid_t id, frame& frame, const std::string& contract,
     int n, double k1, double k2, int once_vol, bool is_sim, const std::string& hist_file,
@@ -18,6 +19,14 @@ dual_thrust_trading_strategy::dual_thrust_trading_strategy(stratid_t id, frame& 
 }
 
 void dual_thrust_trading_strategy::on_tick(const MarketData& tick) {
+    // 设置收盘前一分钟平仓标志
+    if (strncmp(tick.update_time, close_time, 5) == 0) {
+        _is_closing = true;
+        std::ostringstream oss;
+        oss << "Strategy " << get_id() << " start closing positions at " << tick.update_time;
+        Logger::get_instance().info(oss.str());
+    }
+
     if (_is_sim) {
         if (_bar_cursor < _sim_bars.size()) {
             const DTBarData& bar = _sim_bars[_bar_cursor++];
@@ -56,19 +65,47 @@ void dual_thrust_trading_strategy::on_tick(const MarketData& tick) {
 // 订单回报处理：设置撤单条件
 void dual_thrust_trading_strategy::on_order(const Order& order)
 {
+    Logger::get_instance().info("DualThrust on_order triggered: order_ref={}", order.order_ref);
+
+    // 记录买开/卖开挂单
+    if (order.dir_offset == eDirOffset::BuyOpen) {
+        _buy_open_orders.insert(order.order_ref);
+    } else if (order.dir_offset == eDirOffset::SellOpen) {
+        _sell_open_orders.insert(order.order_ref);
+    }
+
+    // 收盘时撤销所有未成交的买开/卖开挂单
+    if (_is_closing) {
+        for (auto order_ref : _buy_open_orders) {
+            cancel_order(order_ref);
+        }
+        for (auto order_ref : _sell_open_orders) {
+            cancel_order(order_ref);
+        }
+        _buy_open_orders.clear();
+        _sell_open_orders.clear();
+    }
+
+    // 设置撤单条件（原有逻辑）
     if (order.order_ref == _buy_orderref || order.order_ref == _sell_orderref)
     {
         set_cancel_condition(order.order_ref, [this](orderref_t order_id)->bool {
-            // 收盘时直接撤单
             if (_is_closing) { return true; }
             return false;
-            });
+        });
     }
 }
 
-// 成交回报处理：成交一边撤另一边挂单
+// 成交回报处理：成交时从列表移除挂单引用
 void dual_thrust_trading_strategy::on_trade(const Order& order)
 {
+    // 成交时移除挂单引用
+    if (order.dir_offset == eDirOffset::BuyOpen) {
+        _buy_open_orders.erase(order.order_ref);
+    } else if (order.dir_offset == eDirOffset::SellOpen) {
+        _sell_open_orders.erase(order.order_ref);
+    }
+
     // 获取方向字符串
     std::string dir_str;
     if (order.dir_offset == eDirOffset::BuyOpen || order.dir_offset == eDirOffset::BuyClose ||

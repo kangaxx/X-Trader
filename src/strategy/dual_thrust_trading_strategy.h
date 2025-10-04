@@ -67,4 +67,6 @@ private:
     std::vector<DTBarData> _sim_bars;
     size_t _bar_cursor = 0;
     SimPosition _sim_pos;
+    std::set<orderref_t> _buy_open_orders, _sell_open_orders;
+    bool _is_closing = false;
 };
