@@ -35,7 +35,8 @@ public:
 	{
 		get_contracts().insert(contract);
 		if (!_redis.connect("127.0.0.1", 6379)) {
-			Logger::get_instance().error("can not connect to redis server 127.0.0.1:6379!");
+			std::string str = "can not connect to redis server 127.0.0.1:6379!";
+			Logger::get_instance().error(str);
 			exit(1);
 		}
 	}
