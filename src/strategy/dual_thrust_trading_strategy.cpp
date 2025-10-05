@@ -387,13 +387,13 @@ void dual_thrust_trading_strategy::simulation_interactive()
             }
         }
 
-        // 仿真结束后，提示用户操作
-        std::cout << "仿真已完成。输入 e 结束仿真，输入 r 重新仿真，输入 f 更换文件名后仿真: ";
+        // 仿真结束后，英文提示用户操作
+        std::cout << "Simulation finished. Enter 'e' to exit, 'r' to rerun, or 'f' to change file and rerun: ";
         std::string cmd;
         std::getline(std::cin, cmd);
 
         if (cmd == "e" || cmd == "E") {
-            std::cout << "仿真结束，程序即将关闭。" << std::endl;
+            std::cout << "Simulation ended. Program will exit." << std::endl;
             exit(0);
         } else if (cmd == "r" || cmd == "R") {
             // 重新仿真，清空历史和游标
@@ -406,7 +406,7 @@ void dual_thrust_trading_strategy::simulation_interactive()
             prepare_simulation();
             continue;
         } else if (cmd == "f" || cmd == "F") {
-            std::cout << "请输入新的文件名（仅文件名，不含路径）: ";
+            std::cout << "Please input new file name (file name only, no path): ";
             std::string new_file;
             std::getline(std::cin, new_file);
             // 只替换文件名部分，不改变路径
@@ -426,7 +426,7 @@ void dual_thrust_trading_strategy::simulation_interactive()
             prepare_simulation();
             continue;
         } else {
-            std::cout << "无效输入，请重新输入。" << std::endl;
+            std::cout << "Invalid input, please try again." << std::endl;
         }
     }
 }
