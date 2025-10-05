@@ -6,6 +6,7 @@
 #include "high_low.h"
 #include "market_correction.h"
 #include "strategy_demo.h"
+#include "dual_thrust_trading_strategy.h"
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>
@@ -45,7 +46,8 @@ void start_running(const char* filename)
 	//strategys.emplace_back(std::make_shared<market_correction>(6, run, "RM409", 1));
 	//strategys.emplace_back(std::make_shared<decline_scalping>(7, run, "RM505", 1));
 	//strategys.emplace_back(std::make_shared<decline_swing>(8, run, "RM505", 1));
-	strategys.emplace_back(std::make_shared<strategy_demo>(9, run, "rb2511"));
+	//strategys.emplace_back(std::make_shared<strategy_demo>(9, run, "rb2511"));
+    strategys.emplace_back(std::make_shared<dual_thrust_trading_strategy>(1, run, "ag2512", 7, 0.5, 0.5, 1, true, "/root/tb_furture_data/AG9999.XSGE.csv", "20130101", 7, "14:59"));
 	run.run_until_close(strategys);
 }
 
