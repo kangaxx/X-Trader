@@ -6,67 +6,96 @@
 #include <vector>
 #include <string>
 
-// Bar数据结构
+// Bar数据结构，存储K线的基本信息
 struct DTBarData {
-    std::string date_str;
-    time_t datetime;
-    double open;
-    double high;
-    double low;
-    double close;
-    int volume;
+    std::string date_str;   // 日期字符串
+    time_t datetime;        // 时间戳
+    double open;            // 开盘价
+    double high;            // 最高价
+    double low;             // 最低价
+    double close;           // 收盘价
+    int volume;             // 成交量
 };
 
 // Dual Thrust 策略类声明
 class dual_thrust_trading_strategy : public strategy
 {
 public:
+    /**
+     * Dual Thrust 策略构造函数
+     * @param id 策略ID
+     * @param frame 框架引用
+     * @param contract 合约代码
+     * @param n 计算区间长度
+     * @param k1 买入线系数
+     * @param k2 卖出线系数
+     * @param once_vol 每次下单手数
+     * @param is_sim 是否为仿真模式
+     * @param hist_file 历史数据文件
+     * @param sim_start_date 仿真起始日期
+     * @param base_days 仿真基准天数
+     * @param end_time 收盘时间
+     */
     dual_thrust_trading_strategy(stratid_t id, frame& frame, const std::string& contract,
         int n = 4, double k1 = 0.5, double k2 = 0.5, int once_vol = 1,
         bool is_sim = false, const std::string& hist_file = "",
         const std::string& sim_start_date = "", int base_days = 4,
         const std::string& end_time = "14:59");
-	~dual_thrust_trading_strategy() {}
+    ~dual_thrust_trading_strategy() {}
+
+    // Tick数据回调
     virtual void on_tick(const MarketData& tick) override;
+    // 订单回报回调
     virtual void on_order(const Order& order) override;
+    // 成交回报回调
     virtual void on_trade(const Order& order) override;
+    // 撤单回报回调
     virtual void on_cancel(const Order& order) override;
+    // 错误回报回调
     virtual void on_error(const Order& order) override;
 
 private:
+    // 仿真持仓结构体
     struct SimPosition {
-        int long_pos = 0;
-        int short_pos = 0;
-        double long_entry = 0.0;
-        double short_entry = 0.0;
-        double profit = 0.0;
+        int long_pos = 0;        // 多头持仓
+        int short_pos = 0;       // 空头持仓
+        double long_entry = 0.0; // 多头开仓价
+        double short_entry = 0.0;// 空头开仓价
+        double profit = 0.0;     // 累计利润
     };
 
+    // 处理K线bar数据
     void on_bar(const DTBarData& bar);
+    // 仿真模式下强制平仓
     void force_close_sim(const DTBarData& bar);
+    // 实盘模式下强制平仓
     void force_close_realtime(const DTBarData& bar);
+    // 加载历史K线数据
     void load_history(const std::string& file);
+    // 仿真准备（分割基准区间和仿真区间）
     void prepare_simulation();
+    // 仿真交互操作
+    void simulation_interactive();
 
-    std::string _contract;
-    int _n;
-    double _k1, _k2;
-    int _once_vol;
-    bool _is_sim;
-    std::string _hist_file;
-    std::string _sim_start_date;
-    int _base_days;
-    std::string _end_time;
+    std::string _contract;           // 合约代码
+    int _n;                          // 区间长度
+    double _k1, _k2;                 // Dual Thrust参数
+    int _once_vol;                   // 每次下单手数
+    bool _is_sim;                    // 是否仿真
+    std::string _hist_file;          // 历史数据文件
+    std::string _sim_start_date;     // 仿真起始日期
+    int _base_days;                  // 仿真基准天数
+    std::string _end_time;           // 收盘时间
 
-    std::string _cur_minute;
-    DTBarData _cur_bar{};
+    std::string _cur_minute;         // 当前分钟
+    DTBarData _cur_bar{};            // 当前bar
 
-    std::deque<DTBarData> _bar_history;
-    std::vector<DTBarData> _history;
-    std::vector<DTBarData> _base_bars;
-    std::vector<DTBarData> _sim_bars;
-    size_t _bar_cursor = 0;
-    SimPosition _sim_pos;
-    std::set<orderref_t> _buy_open_orders, _sell_open_orders;
-    bool _is_closing = false;
+    std::deque<DTBarData> _bar_history;      // bar历史队列
+    std::vector<DTBarData> _history;         // 历史K线数据
+    std::vector<DTBarData> _base_bars;       // 仿真基准区间
+    std::vector<DTBarData> _sim_bars;        // 仿真区间
+    size_t _bar_cursor = 0;                  // 仿真bar游标
+    SimPosition _sim_pos;                    // 仿真持仓
+    std::set<orderref_t> _buy_open_orders, _sell_open_orders; // 买开/卖开挂单引用
+    bool _is_closing = false;                // 是否收盘强平标志
 };

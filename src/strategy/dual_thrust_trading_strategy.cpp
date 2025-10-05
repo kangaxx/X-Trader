@@ -4,7 +4,12 @@
 #include <ctime>
 #include <iomanip>
 #include <set>
+#include <iostream> // 新增：用于交互
 
+/**
+ * Dual Thrust 策略构造函数实现
+ * 初始化参数，仿真模式下加载历史数据并准备仿真
+ */
 dual_thrust_trading_strategy::dual_thrust_trading_strategy(stratid_t id, frame& frame, const std::string& contract,
     int n, double k1, double k2, int once_vol, bool is_sim, const std::string& hist_file,
     const std::string& sim_start_date, int base_days, const std::string& end_time)
@@ -15,9 +20,16 @@ dual_thrust_trading_strategy::dual_thrust_trading_strategy(stratid_t id, frame& 
     if (_is_sim && !_hist_file.empty()) {
         load_history(_hist_file);
         prepare_simulation();
+        simulation_interactive();
     }
 }
 
+/**
+ * Tick数据回调
+ * 1. 判断是否到收盘前一分钟，设置强平标志
+ * 2. 仿真模式下推进bar游标并处理bar
+ * 3. 实盘模式下按分钟聚合bar并处理
+ */
 void dual_thrust_trading_strategy::on_tick(const MarketData& tick) {
     // 在_end_time前一分钟设置_is_closing标志
     std::string tick_minute = std::string(tick.update_time).substr(0, 5);
@@ -39,15 +51,9 @@ void dual_thrust_trading_strategy::on_tick(const MarketData& tick) {
     }
 
     if (_is_sim) {
-        if (_bar_cursor < _sim_bars.size()) {
-            const DTBarData& bar = _sim_bars[_bar_cursor++];
-            on_bar(bar);
-            // 日内最后一分钟强制平仓
-            if (_bar_cursor == _sim_bars.size()) {
-                force_close_sim(bar);
-            }
-        }
+		Logger::get_instance().warn("DualThrust strategy is in simulation mode, on_tick will not process ticks.");
     } else {
+        // 实盘模式按分钟聚合bar
         if (_cur_minute.empty() || tick_minute != _cur_minute) {
             if (!_cur_minute.empty()) {
                 on_bar(_cur_bar);
@@ -72,7 +78,7 @@ void dual_thrust_trading_strategy::on_tick(const MarketData& tick) {
     }
 }
 
-// 订单回报处理：设置撤单条件
+// 订单回报处理：设置撤单条件，收盘时撤销所有未成交挂单
 void dual_thrust_trading_strategy::on_order(const Order& order)
 {
     std::string str = "DualThrust on_order triggered";
@@ -98,7 +104,7 @@ void dual_thrust_trading_strategy::on_order(const Order& order)
     }
 }
 
-// 成交回报处理：成交时从列表移除挂单引用
+// 成交回报处理：成交时从挂单列表移除引用，记录成交日志
 void dual_thrust_trading_strategy::on_trade(const Order& order)
 {
     // 成交时移除挂单引用
@@ -131,7 +137,7 @@ void dual_thrust_trading_strategy::on_trade(const Order& order)
     Logger::get_instance().info(oss.str());
 }
 
-// 撤单回报处理：重置挂单引用
+// 撤单回报处理：重置挂单引用，记录撤单日志
 void dual_thrust_trading_strategy::on_cancel(const Order& order)
 {
     // 获取方向字符串
@@ -156,7 +162,7 @@ void dual_thrust_trading_strategy::on_cancel(const Order& order)
     Logger::get_instance().info(oss.str());
 }
 
-// 错误回报处理：重置挂单引用
+// 错误回报处理：记录错误日志
 void dual_thrust_trading_strategy::on_error(const Order& order)
 {
     std::ostringstream oss;
@@ -169,6 +175,12 @@ void dual_thrust_trading_strategy::on_error(const Order& order)
     Logger::get_instance().error(oss.str());
 }
 
+/**
+ * bar数据处理
+ * 1. 维护bar历史队列
+ * 2. 计算Dual Thrust买卖线
+ * 3. 仿真/实盘分别处理开平仓逻辑
+ */
 void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
     _bar_history.push_back(bar);
     if (_bar_history.size() > _n + 1) _bar_history.pop_front();
@@ -184,6 +196,7 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
     }
     if (ref_bars.empty()) return;
 
+    // 计算区间最高、最低、收盘价
     double hh = ref_bars[0].high, ll = ref_bars[0].low;
     double hc = ref_bars[0].close, lc = ref_bars[0].close;
     for (size_t i = 1; i < ref_bars.size(); ++i) {
@@ -198,6 +211,7 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
     double sell_line = open - _k2 * range;
 
     if (_is_sim) {
+        // 仿真模式下开平仓及盈亏统计
         if (bar.close > buy_line && _sim_pos.long_pos == 0) {
             _sim_pos.long_pos = _once_vol;
             _sim_pos.long_entry = bar.close;
@@ -229,6 +243,7 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
             _sim_pos.short_pos = 0;
         }
     } else {
+        // 实盘模式下开平仓
         const auto& posi = get_position(_contract);
         if (bar.close > buy_line && posi.long_.position == 0) {
             buy_open(eOrderFlag::Limit, _contract, bar.close, _once_vol);
@@ -257,6 +272,9 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
     }
 }
 
+/**
+ * 仿真模式下收盘强制平仓
+ */
 void dual_thrust_trading_strategy::force_close_sim(const DTBarData& bar) {
     double profit = 0.0;
     if (_sim_pos.long_pos > 0) {
@@ -280,6 +298,9 @@ void dual_thrust_trading_strategy::force_close_sim(const DTBarData& bar) {
     Logger::get_instance().info(oss.str());
 }
 
+/**
+ * 实盘模式下收盘强制平仓
+ */
 void dual_thrust_trading_strategy::force_close_realtime(const DTBarData& bar) {
     const auto& posi = get_position(_contract);
     if (posi.long_.position > 0) {
@@ -296,6 +317,10 @@ void dual_thrust_trading_strategy::force_close_realtime(const DTBarData& bar) {
     }
 }
 
+/**
+ * 加载历史K线数据
+ * @param file 历史数据文件路径
+ */
 void dual_thrust_trading_strategy::load_history(const std::string& file) {
     std::ifstream ifs(file);
     if (!ifs.is_open()) {
@@ -303,7 +328,7 @@ void dual_thrust_trading_strategy::load_history(const std::string& file) {
         return;
     }
     std::string line;
-    std::getline(ifs, line);
+    std::getline(ifs, line); // 跳过表头
     while (std::getline(ifs, line)) {
         std::istringstream iss(line);
         std::string token;
@@ -322,6 +347,9 @@ void dual_thrust_trading_strategy::load_history(const std::string& file) {
     Logger::get_instance().info(oss.str());
 }
 
+/**
+ * 仿真准备，分割基准区间和仿真区间
+ */
 void dual_thrust_trading_strategy::prepare_simulation() {
     size_t start_idx = 0;
     for (; start_idx < _history.size(); ++start_idx) {
@@ -340,4 +368,65 @@ void dual_thrust_trading_strategy::prepare_simulation() {
         << ", base days: " << _base_days
         << ", sim bars: " << _sim_bars.size();
     Logger::get_instance().info(oss.str());
+}
+
+/**
+ * 仿真模式下交互操作
+ * 支持 e-退出，r-重跑，f-更换文件名后重跑
+ */
+void dual_thrust_trading_strategy::simulation_interactive()
+{
+    while (true) {
+        // 仿真模式推进bar游标
+        while (_bar_cursor < _sim_bars.size()) {
+            const DTBarData& bar = _sim_bars[_bar_cursor++];
+            on_bar(bar);
+            // 日内最后一分钟强制平仓
+            if (_bar_cursor == _sim_bars.size()) {
+                force_close_sim(bar);
+            }
+        }
+
+        // 仿真结束后，提示用户操作
+        std::cout << "仿真已完成。输入 e 结束仿真，输入 r 重新仿真，输入 f 更换文件名后仿真: ";
+        std::string cmd;
+        std::getline(std::cin, cmd);
+
+        if (cmd == "e" || cmd == "E") {
+            std::cout << "仿真结束，程序即将关闭。" << std::endl;
+            exit(0);
+        } else if (cmd == "r" || cmd == "R") {
+            // 重新仿真，清空历史和游标
+            _history.clear();
+            _base_bars.clear();
+            _sim_bars.clear();
+            _bar_cursor = 0;
+            _sim_pos = SimPosition();
+            load_history(_hist_file);
+            prepare_simulation();
+            continue;
+        } else if (cmd == "f" || cmd == "F") {
+            std::cout << "请输入新的文件名（仅文件名，不含路径）: ";
+            std::string new_file;
+            std::getline(std::cin, new_file);
+            // 只替换文件名部分，不改变路径
+            auto pos = _hist_file.find_last_of("/\\");
+            if (pos != std::string::npos) {
+                _hist_file = _hist_file.substr(0, pos + 1) + new_file;
+            } else {
+                _hist_file = new_file;
+            }
+            // 重新仿真，清空历史和游标
+            _history.clear();
+            _base_bars.clear();
+            _sim_bars.clear();
+            _bar_cursor = 0;
+            _sim_pos = SimPosition();
+            load_history(_hist_file);
+            prepare_simulation();
+            continue;
+        } else {
+            std::cout << "无效输入，请重新输入。" << std::endl;
+        }
+    }
 }
