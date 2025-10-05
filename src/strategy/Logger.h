@@ -28,11 +28,13 @@ public:
 
     // std::string重载
     void debug(const std::string& msg) { debug_logger_->debug(msg.c_str()); }
+    void debug(const char* msg) { info_logger_->debug(msg); }
     void info(const std::string& msg) { info_logger_->info(msg.c_str()); }
     void info(const char* msg) { info_logger_->info(msg); }
     void warn(const std::string& msg) { warn_logger_->warn(msg.c_str()); }
     void warn(const char* msg) { info_logger_->warn(msg); }
     void error(const std::string& msg) { error_logger_->error(msg.c_str()); }
+    void error(const char* msg) { info_logger_->error(msg); }
     void trace(const std::string& msg) { debug_logger_->trace(msg.c_str()); }
     void critical(const std::string& msg) { error_logger_->critical(msg.c_str()); }
 
