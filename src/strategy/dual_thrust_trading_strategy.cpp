@@ -213,11 +213,9 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
             << ", low=" << bar.low
             << ", close=" << bar.close
             << ", volume=" << bar.volume
-            << " | RefBars: hh=" << hh
-            << ", ll=" << ll
-            << ", hc=" << hc
-            << ", lc=" << lc
-            << ", range=" << range
+            << ", k1=" << _k1
+            << ", k2=" << _k2
+            << ", range=" << _range
             << ", buy_line=" << buy_line
             << ", sell_line=" << sell_line
             << ", long_pos=" << _sim_pos.long_pos
