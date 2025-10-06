@@ -190,6 +190,11 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
     std::string bar_day = bar.date_str.substr(0, 10); // "YYYY-MM-DD"
     std::string today_day = _today_bar.date_str.empty() ? "" : _today_bar.date_str.substr(0, 10);
 
+    // 提取bar的时分
+    std::string bar_time = (bar.date_str.size() >= 16) ? bar.date_str.substr(11, 5) : "";
+    // _end_time格式为"HH:MM"
+    bool is_after_end_time = (!bar_time.empty() && bar_time >= _end_time);
+
     if (_today_bar.date_str.empty() || bar_day == today_day) {
         // 同一天，合并到_today_bar
         if (_today_bar.date_str.empty()) {
@@ -200,7 +205,7 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
             _today_bar.low = std::min(_today_bar.low, bar.low);
             _today_bar.close = bar.close;
             _today_bar.volume += bar.volume;
-            _today_bar.datetime = bar.datetime; // 可选：记录最后一根bar的时间
+            _today_bar.datetime = bar.datetime;
         }
     } else {
         // 日期变更，先将上一天的_today_bar加入_base_bars
@@ -220,6 +225,12 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
         _today_bar.date_str = bar_day;
     }
 
+    // 如果到达或超过收盘时间，停止开单并强制平仓
+    if (is_after_end_time) {
+        force_close_sim(bar);
+        return;
+    }
+
     _bar_history.push_back(bar);
     if (_bar_history.size() > _n + 1) _bar_history.pop_front();
 
@@ -237,7 +248,6 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
     double open = bar.open;
     double buy_line = open + _k1 * _range;
     double sell_line = open - _k2 * _range;
-	
 
     // 仿真模式下详细日志，便于调试
     if (_is_sim) {
@@ -262,7 +272,6 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
         if (bar.close > buy_line && _sim_pos.long_pos == 0) {
             _sim_pos.long_pos = _once_vol;
             _sim_pos.long_entry = bar.close;
-            // 计算多头止盈价
             _sim_pos.long_take_profit = calc_take_profit(
                 _sim_pos.long_entry, _range, bar.close, bar.high, _range * 1.5, 0.02, 1
             );
@@ -278,7 +287,6 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
         if (bar.close < sell_line && _sim_pos.short_pos == 0) {
             _sim_pos.short_pos = _once_vol;
             _sim_pos.short_entry = bar.close;
-            // 计算空头止盈价
             _sim_pos.short_take_profit = calc_take_profit(
                 _sim_pos.short_entry, _range, bar.close, bar.low, _range * 1.5, 0.02, -1
             );
@@ -575,10 +583,6 @@ void dual_thrust_trading_strategy::simulation_interactive()
         while (_bar_cursor < _sim_bars.size()) {
             const DTBarData& bar = _sim_bars[_bar_cursor++];
             on_bar(bar);
-            // 日内最后一分钟强制平仓
-            if (_bar_cursor == _sim_bars.size()) {
-                force_close_sim(bar);
-            }
         }
 
         // 仿真结束后，英文提示用户操作
