@@ -223,7 +223,7 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
             << ", long_pos=" << _sim_pos.long_pos
             << ", short_pos=" << _sim_pos.short_pos
             << ", profit=" << _sim_pos.profit;
-		Logger::get_instance().Debug(oss_bar_info.str());
+		Logger::get_instance().debug(oss_bar_info.str());
 
         // 增强版开平仓逻辑
         if (bar.close > buy_line && _sim_pos.long_pos == 0) {
@@ -426,7 +426,7 @@ void dual_thrust_trading_strategy::generate_base_bars() {
             << ", close=" << daily.close
             << ", volume=" << daily.volume
             << ", datetime=" << daily.datetime;
-        Logger::get_instance().Debug(oss.str());
+        Logger::get_instance().debug(oss.str());
 
         _base_bars.push_back(daily);
     }
@@ -450,7 +450,7 @@ void dual_thrust_trading_strategy::generate_base_bars() {
     // 打印range到debug日志
     std::ostringstream oss_range;
     oss_range << "[BASE_RANGE] range=" << _range << ", hh=" << hh << ", ll=" << ll << ", hc=" << hc << ", lc=" << lc;
-    Logger::get_instance().Debug(oss_range.str());
+    Logger::get_instance().debug(oss_range.str());
 }
 
 /**
