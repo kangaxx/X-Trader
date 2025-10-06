@@ -245,9 +245,8 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
     }
     if (ref_bars.empty()) return;
 
-    double open = bar.open;
-    double buy_line = open + _k1 * _range;
-    double sell_line = open - _k2 * _range;
+    double buy_line = _today_bar.open + _k1 * _range;
+    double sell_line = _today_bar.open - _k2 * _range;
 
     // 仿真模式下详细日志，便于调试
     if (_is_sim) {
