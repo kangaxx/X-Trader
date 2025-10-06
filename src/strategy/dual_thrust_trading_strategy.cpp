@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <set>
 #include <iostream> // 新增：用于交互
+#include <regex>
 
 /**
  * Dual Thrust 策略构造函数实现
@@ -375,15 +376,24 @@ void dual_thrust_trading_strategy::load_history(const std::string& file) {
     Logger::get_instance().info(oss.str());
 }
 
-/**
- * 新增：生成_base_bars日K线（由分钟K线聚合而成）
- */
+// 辅助函数：从"YYYY-MM-DD hh:mm:ss"中提取"YYYYMMDD"
+static std::string extract_date(const std::string& datetime_str) {
+    // 假设格式严格为"YYYY-MM-DD hh:mm:ss"
+    if (datetime_str.size() >= 10) {
+        // 去掉'-'
+        return datetime_str.substr(0, 4) + datetime_str.substr(5, 2) + datetime_str.substr(8, 2);
+    }
+    return datetime_str;
+}
+
 void dual_thrust_trading_strategy::generate_base_bars() {
     // 1. 先按日期聚合，得到每个交易日的所有分钟K线
     std::map<std::string, std::vector<DTBarData>> date_to_bars;
     for (const auto& bar : _history) {
-        if (bar.date_str < _sim_start_date) {
-            date_to_bars[bar.date_str].push_back(bar);
+        std::string bar_date = extract_date(bar.date_str);
+        std::string sim_start = extract_date(_sim_start_date);
+        if (bar_date < sim_start) {
+            date_to_bars[bar_date].push_back(bar);
         }
     }
     // 2. 按日期排序，取最后_base_days天
@@ -401,7 +411,8 @@ void dual_thrust_trading_strategy::generate_base_bars() {
         const auto& bars = date_to_bars[all_dates[i]];
         if (bars.empty()) continue;
         DTBarData daily{};
-        daily.date_str = all_dates[i];
+        // 还原为"YYYY-MM-DD"格式
+        daily.date_str = all_dates[i].substr(0, 4) + "-" + all_dates[i].substr(4, 2) + "-" + all_dates[i].substr(6, 2);
         daily.open = bars.front().open;
         daily.high = bars.front().high;
         daily.low = bars.front().low;
