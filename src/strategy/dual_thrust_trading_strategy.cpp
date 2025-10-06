@@ -245,7 +245,7 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
             _sim_pos.short_entry = bar.close;
             // º∆À„ø’Õ∑÷π”Øº€
             _sim_pos.short_take_profit = calc_take_profit(
-                _sim_pos.short_entry, _range, bar.close, bar.low, 10, 0.02, -1
+                _sim_pos.short_entry, _range, bar.close, bar.low, _range, 0.02, -1
             );
             std::ostringstream oss2;
             oss2 << "[SIM] SELL OPEN: date=" << bar.date_str
