@@ -200,13 +200,12 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
     }
     if (ref_bars.empty()) return;
 
-    // 计算区间最高、最低、收盘价
     double open = bar.open;
     double buy_line = open + _k1 * _range;
     double sell_line = open - _k2 * _range;
 
+    // 仿真模式下详细日志，便于调试
     if (_is_sim) {
-        // 仿真模式下详细日志，便于调试
         std::ostringstream oss_bar_info;
         oss_bar_info << "[SIM] Bar: date=" << bar.date_str
             << ", open=" << bar.open
@@ -222,54 +221,95 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
             << ", long_pos=" << _sim_pos.long_pos
             << ", short_pos=" << _sim_pos.short_pos
             << ", profit=" << _sim_pos.profit;
-		Logger::get_instance().debug(oss_bar_info.str());
+        Logger::get_instance().debug(oss_bar_info.str());
 
-        // 增强版开平仓逻辑
+        // 多头开仓
         if (bar.close > buy_line && _sim_pos.long_pos == 0) {
             _sim_pos.long_pos = _once_vol;
             _sim_pos.long_entry = bar.close;
+            // 计算多头止盈价
+            _sim_pos.long_take_profit = calc_take_profit(
+                _sim_pos.long_entry, _range, bar.close, bar.high, 10, 0.02, 1
+            );
             std::ostringstream oss2;
             oss2 << "[SIM] BUY OPEN: date=" << bar.date_str
                  << ", price=" << bar.close
                  << ", buy_line=" << buy_line
-                 << ", long_pos=" << _sim_pos.long_pos;
+                 << ", long_pos=" << _sim_pos.long_pos
+                 << ", take_profit=" << _sim_pos.long_take_profit;
             Logger::get_instance().info(oss2.str());
         }
+        // 空头开仓
         if (bar.close < sell_line && _sim_pos.short_pos == 0) {
             _sim_pos.short_pos = _once_vol;
             _sim_pos.short_entry = bar.close;
+            // 计算空头止盈价
+            _sim_pos.short_take_profit = calc_take_profit(
+                _sim_pos.short_entry, _range, bar.close, bar.low, 10, 0.02, -1
+            );
             std::ostringstream oss2;
             oss2 << "[SIM] SELL OPEN: date=" << bar.date_str
                  << ", price=" << bar.close
                  << ", sell_line=" << sell_line
-                 << ", short_pos=" << _sim_pos.short_pos;
+                 << ", short_pos=" << _sim_pos.short_pos
+                 << ", take_profit=" << _sim_pos.short_take_profit;
             Logger::get_instance().info(oss2.str());
         }
-        if (_sim_pos.long_pos > 0 && bar.close < sell_line) {
-            double profit = (bar.close - _sim_pos.long_entry) * _sim_pos.long_pos;
-            _sim_pos.profit += profit;
-            std::ostringstream oss2;
-            oss2 << "[SIM] CLOSE LONG: date=" << bar.date_str
-                 << ", price=" << bar.close
-                 << ", entry=" << _sim_pos.long_entry
-                 << ", sell_line=" << sell_line
-                 << ", profit=" << profit
-                 << ", total_profit=" << _sim_pos.profit;
-            Logger::get_instance().info(oss2.str());
-            _sim_pos.long_pos = 0;
+        // 多头止盈
+        if (_sim_pos.long_pos > 0) {
+            if (bar.close < sell_line) {
+                double profit = (bar.close - _sim_pos.long_entry) * _sim_pos.long_pos;
+                _sim_pos.profit += profit;
+                std::ostringstream oss2;
+                oss2 << "[SIM] CLOSE LONG: date=" << bar.date_str
+                     << ", price=" << bar.close
+                     << ", entry=" << _sim_pos.long_entry
+                     << ", sell_line=" << sell_line
+                     << ", profit=" << profit
+                     << ", total_profit=" << _sim_pos.profit;
+                Logger::get_instance().info(oss2.str());
+                _sim_pos.long_pos = 0;
+            } else if (bar.close >= _sim_pos.long_take_profit) {
+                double profit = (_sim_pos.long_take_profit - _sim_pos.long_entry) * _sim_pos.long_pos;
+                _sim_pos.profit += profit;
+                std::ostringstream oss2;
+                oss2 << "[SIM] TAKE PROFIT LONG: date=" << bar.date_str
+                     << ", price=" << bar.close
+                     << ", entry=" << _sim_pos.long_entry
+                     << ", take_profit=" << _sim_pos.long_take_profit
+                     << ", profit=" << profit
+                     << ", total_profit=" << _sim_pos.profit;
+                Logger::get_instance().info(oss2.str());
+                _sim_pos.long_pos = 0;
+            }
         }
-        if (_sim_pos.short_pos > 0 && bar.close > buy_line) {
-            double profit = (_sim_pos.short_entry - bar.close) * _sim_pos.short_pos;
-            _sim_pos.profit += profit;
-            std::ostringstream oss2;
-            oss2 << "[SIM] CLOSE SHORT: date=" << bar.date_str
-                 << ", price=" << bar.close
-                 << ", entry=" << _sim_pos.short_entry
-                 << ", buy_line=" << buy_line
-                 << ", profit=" << profit
-                 << ", total_profit=" << _sim_pos.profit;
-            Logger::get_instance().info(oss2.str());
-            _sim_pos.short_pos = 0;
+        // 空头止盈
+        if (_sim_pos.short_pos > 0) {
+            if (bar.close > buy_line) {
+                double profit = (_sim_pos.short_entry - bar.close) * _sim_pos.short_pos;
+                _sim_pos.profit += profit;
+                std::ostringstream oss2;
+                oss2 << "[SIM] CLOSE SHORT: date=" << bar.date_str
+                     << ", price=" << bar.close
+                     << ", entry=" << _sim_pos.short_entry
+                     << ", buy_line=" << buy_line
+                     << ", profit=" << profit
+                     << ", total_profit=" << _sim_pos.profit;
+                Logger::get_instance().info(oss2.str());
+                _sim_pos.short_pos = 0;
+            } else if (bar.close <= _sim_pos.short_take_profit) {
+                double profit = (_sim_pos.short_entry - _sim_pos.short_take_profit) * _sim_pos.short_pos;
+                _sim_pos.profit += profit;
+                std::ostringstream oss2;
+                oss2 << "[SIM] TAKE PROFIT SHORT: date=" << bar.date_str
+                     << ", price=" << bar.close
+                     << ", entry=" << _sim_pos.short_entry
+                     << ", take_profit=" << _sim_pos.short_take_profit
+                     << ", profit=" << profit
+                     << ", total_profit=" << _sim_pos.profit;
+                Logger::get_instance().info(oss2.str());
+                _sim_pos.short_pos = 0;
+            }
         }
     } else {
         // 实盘模式下开平仓逻辑
@@ -539,5 +579,42 @@ void dual_thrust_trading_strategy::simulation_interactive()
         } else {
             std::cout << "Invalid input, please try again." << std::endl;
         }
+    }
+}
+
+// 计算止盈数值
+// 参数说明：
+// entry_price      开仓价
+// volatility       波动率（如ATR等）
+// current_price    当前价格
+// trailing_extreme 持仓期间最高价（多头）或最低价（空头）
+// fixed_value      固定点数
+// ratio_value      固定比例（如0.02表示2%）
+// direction        1=多头，-1=空头
+// 返回止盈价位
+double dual_thrust_trading_strategy::calc_take_profit(
+    double entry_price,
+    double volatility,
+    double current_price,
+    double trailing_extreme,
+    double fixed_value,
+    double ratio_value,
+    int direction)
+{
+    switch (_take_profit_type) {
+    case TakeProfitType::FixedPoint:
+        // 固定点数止盈：多头=开仓价+点数，空头=开仓价-点数
+        return entry_price + direction * fixed_value;
+    case TakeProfitType::Ratio:
+        // 固定比例止盈：多头=开仓价*(1+比例)，空头=开仓价*(1-比例)
+        return entry_price * (1.0 + direction * ratio_value);
+    case TakeProfitType::Volatility:
+        // 波动率止盈：多头=开仓价+N*volatility，空头=开仓价-N*volatility
+        return entry_price + direction * fixed_value * volatility;
+    case TakeProfitType::Trailing:
+        // 移动止损转止盈：多头=trailing_max-回撤，空头=trailing_min+回撤
+        return trailing_extreme - direction * fixed_value;
+    default:
+        return 0.0;
     }
 }

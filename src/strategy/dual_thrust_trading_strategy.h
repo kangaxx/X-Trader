@@ -17,6 +17,14 @@ struct DTBarData {
     int volume;             // 成交量
 };
 
+// 止盈类型枚举
+enum class TakeProfitType {
+    FixedPoint,     // 固定点数止盈
+    Ratio,          // 固定比例止盈
+    Volatility,     // 波动率止盈
+    Trailing        // 移动止损转止盈
+};
+
 // Dual Thrust 策略类声明
 class dual_thrust_trading_strategy : public strategy
 {
@@ -60,7 +68,9 @@ private:
         int long_pos = 0;        // 多头持仓
         int short_pos = 0;       // 空头持仓
         double long_entry = 0.0; // 多头开仓价
+		double long_take_profit = 0.0; // 多头止盈价
         double short_entry = 0.0;// 空头开仓价
+		double short_take_profit = 0.0; // 空头止盈价
         double profit = 0.0;     // 累计利润
     };
 
@@ -101,4 +111,10 @@ private:
     std::set<orderref_t> _buy_open_orders, _sell_open_orders; // 买开/卖开挂单引用
     bool _is_closing = false;                // 是否收盘强平标志
 	double _range;                           // 价格区间
+
+    TakeProfitType _take_profit_type = TakeProfitType::FixedPoint; // 止盈类型
+
+    // 计算止盈数值
+    // direction: 1=多头，-1=空头
+    double calc_take_profit(double entry_price, double volatility, double current_price, double trailing_extreme, double fixed_value, double ratio_value, int direction);
 };
