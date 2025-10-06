@@ -97,10 +97,24 @@ strategy/CMakeFiles/demo.dir/decline_swing.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/demo.dir/decline_swing.cpp.s"
 	cd /root/X-Trader/src/strategy && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/X-Trader/src/strategy/decline_swing.cpp -o CMakeFiles/demo.dir/decline_swing.cpp.s
 
+strategy/CMakeFiles/demo.dir/dual_thrust_trading_strategy.cpp.o: strategy/CMakeFiles/demo.dir/flags.make
+strategy/CMakeFiles/demo.dir/dual_thrust_trading_strategy.cpp.o: strategy/dual_thrust_trading_strategy.cpp
+strategy/CMakeFiles/demo.dir/dual_thrust_trading_strategy.cpp.o: strategy/CMakeFiles/demo.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/X-Trader/src/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object strategy/CMakeFiles/demo.dir/dual_thrust_trading_strategy.cpp.o"
+	cd /root/X-Trader/src/strategy && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT strategy/CMakeFiles/demo.dir/dual_thrust_trading_strategy.cpp.o -MF CMakeFiles/demo.dir/dual_thrust_trading_strategy.cpp.o.d -o CMakeFiles/demo.dir/dual_thrust_trading_strategy.cpp.o -c /root/X-Trader/src/strategy/dual_thrust_trading_strategy.cpp
+
+strategy/CMakeFiles/demo.dir/dual_thrust_trading_strategy.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/demo.dir/dual_thrust_trading_strategy.cpp.i"
+	cd /root/X-Trader/src/strategy && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/X-Trader/src/strategy/dual_thrust_trading_strategy.cpp > CMakeFiles/demo.dir/dual_thrust_trading_strategy.cpp.i
+
+strategy/CMakeFiles/demo.dir/dual_thrust_trading_strategy.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/demo.dir/dual_thrust_trading_strategy.cpp.s"
+	cd /root/X-Trader/src/strategy && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/X-Trader/src/strategy/dual_thrust_trading_strategy.cpp -o CMakeFiles/demo.dir/dual_thrust_trading_strategy.cpp.s
+
 strategy/CMakeFiles/demo.dir/high_low.cpp.o: strategy/CMakeFiles/demo.dir/flags.make
 strategy/CMakeFiles/demo.dir/high_low.cpp.o: strategy/high_low.cpp
 strategy/CMakeFiles/demo.dir/high_low.cpp.o: strategy/CMakeFiles/demo.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/X-Trader/src/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object strategy/CMakeFiles/demo.dir/high_low.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/X-Trader/src/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object strategy/CMakeFiles/demo.dir/high_low.cpp.o"
 	cd /root/X-Trader/src/strategy && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT strategy/CMakeFiles/demo.dir/high_low.cpp.o -MF CMakeFiles/demo.dir/high_low.cpp.o.d -o CMakeFiles/demo.dir/high_low.cpp.o -c /root/X-Trader/src/strategy/high_low.cpp
 
 strategy/CMakeFiles/demo.dir/high_low.cpp.i: cmake_force
@@ -114,7 +128,7 @@ strategy/CMakeFiles/demo.dir/high_low.cpp.s: cmake_force
 strategy/CMakeFiles/demo.dir/main.cpp.o: strategy/CMakeFiles/demo.dir/flags.make
 strategy/CMakeFiles/demo.dir/main.cpp.o: strategy/main.cpp
 strategy/CMakeFiles/demo.dir/main.cpp.o: strategy/CMakeFiles/demo.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/X-Trader/src/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object strategy/CMakeFiles/demo.dir/main.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/X-Trader/src/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object strategy/CMakeFiles/demo.dir/main.cpp.o"
 	cd /root/X-Trader/src/strategy && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT strategy/CMakeFiles/demo.dir/main.cpp.o -MF CMakeFiles/demo.dir/main.cpp.o.d -o CMakeFiles/demo.dir/main.cpp.o -c /root/X-Trader/src/strategy/main.cpp
 
 strategy/CMakeFiles/demo.dir/main.cpp.i: cmake_force
@@ -128,7 +142,7 @@ strategy/CMakeFiles/demo.dir/main.cpp.s: cmake_force
 strategy/CMakeFiles/demo.dir/market_correction.cpp.o: strategy/CMakeFiles/demo.dir/flags.make
 strategy/CMakeFiles/demo.dir/market_correction.cpp.o: strategy/market_correction.cpp
 strategy/CMakeFiles/demo.dir/market_correction.cpp.o: strategy/CMakeFiles/demo.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/X-Trader/src/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object strategy/CMakeFiles/demo.dir/market_correction.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/X-Trader/src/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object strategy/CMakeFiles/demo.dir/market_correction.cpp.o"
 	cd /root/X-Trader/src/strategy && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT strategy/CMakeFiles/demo.dir/market_correction.cpp.o -MF CMakeFiles/demo.dir/market_correction.cpp.o.d -o CMakeFiles/demo.dir/market_correction.cpp.o -c /root/X-Trader/src/strategy/market_correction.cpp
 
 strategy/CMakeFiles/demo.dir/market_correction.cpp.i: cmake_force
@@ -142,7 +156,7 @@ strategy/CMakeFiles/demo.dir/market_correction.cpp.s: cmake_force
 strategy/CMakeFiles/demo.dir/market_making.cpp.o: strategy/CMakeFiles/demo.dir/flags.make
 strategy/CMakeFiles/demo.dir/market_making.cpp.o: strategy/market_making.cpp
 strategy/CMakeFiles/demo.dir/market_making.cpp.o: strategy/CMakeFiles/demo.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/X-Trader/src/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object strategy/CMakeFiles/demo.dir/market_making.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/X-Trader/src/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object strategy/CMakeFiles/demo.dir/market_making.cpp.o"
 	cd /root/X-Trader/src/strategy && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT strategy/CMakeFiles/demo.dir/market_making.cpp.o -MF CMakeFiles/demo.dir/market_making.cpp.o.d -o CMakeFiles/demo.dir/market_making.cpp.o -c /root/X-Trader/src/strategy/market_making.cpp
 
 strategy/CMakeFiles/demo.dir/market_making.cpp.i: cmake_force
@@ -156,7 +170,7 @@ strategy/CMakeFiles/demo.dir/market_making.cpp.s: cmake_force
 strategy/CMakeFiles/demo.dir/order_flow.cpp.o: strategy/CMakeFiles/demo.dir/flags.make
 strategy/CMakeFiles/demo.dir/order_flow.cpp.o: strategy/order_flow.cpp
 strategy/CMakeFiles/demo.dir/order_flow.cpp.o: strategy/CMakeFiles/demo.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/X-Trader/src/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object strategy/CMakeFiles/demo.dir/order_flow.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/X-Trader/src/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object strategy/CMakeFiles/demo.dir/order_flow.cpp.o"
 	cd /root/X-Trader/src/strategy && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT strategy/CMakeFiles/demo.dir/order_flow.cpp.o -MF CMakeFiles/demo.dir/order_flow.cpp.o.d -o CMakeFiles/demo.dir/order_flow.cpp.o -c /root/X-Trader/src/strategy/order_flow.cpp
 
 strategy/CMakeFiles/demo.dir/order_flow.cpp.i: cmake_force
@@ -170,7 +184,7 @@ strategy/CMakeFiles/demo.dir/order_flow.cpp.s: cmake_force
 strategy/CMakeFiles/demo.dir/order_imbalance.cpp.o: strategy/CMakeFiles/demo.dir/flags.make
 strategy/CMakeFiles/demo.dir/order_imbalance.cpp.o: strategy/order_imbalance.cpp
 strategy/CMakeFiles/demo.dir/order_imbalance.cpp.o: strategy/CMakeFiles/demo.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/X-Trader/src/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object strategy/CMakeFiles/demo.dir/order_imbalance.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/X-Trader/src/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object strategy/CMakeFiles/demo.dir/order_imbalance.cpp.o"
 	cd /root/X-Trader/src/strategy && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT strategy/CMakeFiles/demo.dir/order_imbalance.cpp.o -MF CMakeFiles/demo.dir/order_imbalance.cpp.o.d -o CMakeFiles/demo.dir/order_imbalance.cpp.o -c /root/X-Trader/src/strategy/order_imbalance.cpp
 
 strategy/CMakeFiles/demo.dir/order_imbalance.cpp.i: cmake_force
@@ -181,10 +195,24 @@ strategy/CMakeFiles/demo.dir/order_imbalance.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/demo.dir/order_imbalance.cpp.s"
 	cd /root/X-Trader/src/strategy && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/X-Trader/src/strategy/order_imbalance.cpp -o CMakeFiles/demo.dir/order_imbalance.cpp.s
 
+strategy/CMakeFiles/demo.dir/rb_intraday_turtle.cpp.o: strategy/CMakeFiles/demo.dir/flags.make
+strategy/CMakeFiles/demo.dir/rb_intraday_turtle.cpp.o: strategy/rb_intraday_turtle.cpp
+strategy/CMakeFiles/demo.dir/rb_intraday_turtle.cpp.o: strategy/CMakeFiles/demo.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/X-Trader/src/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object strategy/CMakeFiles/demo.dir/rb_intraday_turtle.cpp.o"
+	cd /root/X-Trader/src/strategy && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT strategy/CMakeFiles/demo.dir/rb_intraday_turtle.cpp.o -MF CMakeFiles/demo.dir/rb_intraday_turtle.cpp.o.d -o CMakeFiles/demo.dir/rb_intraday_turtle.cpp.o -c /root/X-Trader/src/strategy/rb_intraday_turtle.cpp
+
+strategy/CMakeFiles/demo.dir/rb_intraday_turtle.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/demo.dir/rb_intraday_turtle.cpp.i"
+	cd /root/X-Trader/src/strategy && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/X-Trader/src/strategy/rb_intraday_turtle.cpp > CMakeFiles/demo.dir/rb_intraday_turtle.cpp.i
+
+strategy/CMakeFiles/demo.dir/rb_intraday_turtle.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/demo.dir/rb_intraday_turtle.cpp.s"
+	cd /root/X-Trader/src/strategy && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/X-Trader/src/strategy/rb_intraday_turtle.cpp -o CMakeFiles/demo.dir/rb_intraday_turtle.cpp.s
+
 strategy/CMakeFiles/demo.dir/redis_client.cpp.o: strategy/CMakeFiles/demo.dir/flags.make
 strategy/CMakeFiles/demo.dir/redis_client.cpp.o: strategy/redis_client.cpp
 strategy/CMakeFiles/demo.dir/redis_client.cpp.o: strategy/CMakeFiles/demo.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/X-Trader/src/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object strategy/CMakeFiles/demo.dir/redis_client.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/X-Trader/src/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object strategy/CMakeFiles/demo.dir/redis_client.cpp.o"
 	cd /root/X-Trader/src/strategy && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT strategy/CMakeFiles/demo.dir/redis_client.cpp.o -MF CMakeFiles/demo.dir/redis_client.cpp.o.d -o CMakeFiles/demo.dir/redis_client.cpp.o -c /root/X-Trader/src/strategy/redis_client.cpp
 
 strategy/CMakeFiles/demo.dir/redis_client.cpp.i: cmake_force
@@ -195,10 +223,24 @@ strategy/CMakeFiles/demo.dir/redis_client.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/demo.dir/redis_client.cpp.s"
 	cd /root/X-Trader/src/strategy && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/X-Trader/src/strategy/redis_client.cpp -o CMakeFiles/demo.dir/redis_client.cpp.s
 
+strategy/CMakeFiles/demo.dir/simp_turtle_trading_strategy.cpp.o: strategy/CMakeFiles/demo.dir/flags.make
+strategy/CMakeFiles/demo.dir/simp_turtle_trading_strategy.cpp.o: strategy/simp_turtle_trading_strategy.cpp
+strategy/CMakeFiles/demo.dir/simp_turtle_trading_strategy.cpp.o: strategy/CMakeFiles/demo.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/X-Trader/src/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object strategy/CMakeFiles/demo.dir/simp_turtle_trading_strategy.cpp.o"
+	cd /root/X-Trader/src/strategy && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT strategy/CMakeFiles/demo.dir/simp_turtle_trading_strategy.cpp.o -MF CMakeFiles/demo.dir/simp_turtle_trading_strategy.cpp.o.d -o CMakeFiles/demo.dir/simp_turtle_trading_strategy.cpp.o -c /root/X-Trader/src/strategy/simp_turtle_trading_strategy.cpp
+
+strategy/CMakeFiles/demo.dir/simp_turtle_trading_strategy.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/demo.dir/simp_turtle_trading_strategy.cpp.i"
+	cd /root/X-Trader/src/strategy && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/X-Trader/src/strategy/simp_turtle_trading_strategy.cpp > CMakeFiles/demo.dir/simp_turtle_trading_strategy.cpp.i
+
+strategy/CMakeFiles/demo.dir/simp_turtle_trading_strategy.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/demo.dir/simp_turtle_trading_strategy.cpp.s"
+	cd /root/X-Trader/src/strategy && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/X-Trader/src/strategy/simp_turtle_trading_strategy.cpp -o CMakeFiles/demo.dir/simp_turtle_trading_strategy.cpp.s
+
 strategy/CMakeFiles/demo.dir/statistical_arbitrage.cpp.o: strategy/CMakeFiles/demo.dir/flags.make
 strategy/CMakeFiles/demo.dir/statistical_arbitrage.cpp.o: strategy/statistical_arbitrage.cpp
 strategy/CMakeFiles/demo.dir/statistical_arbitrage.cpp.o: strategy/CMakeFiles/demo.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/X-Trader/src/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object strategy/CMakeFiles/demo.dir/statistical_arbitrage.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/X-Trader/src/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object strategy/CMakeFiles/demo.dir/statistical_arbitrage.cpp.o"
 	cd /root/X-Trader/src/strategy && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT strategy/CMakeFiles/demo.dir/statistical_arbitrage.cpp.o -MF CMakeFiles/demo.dir/statistical_arbitrage.cpp.o.d -o CMakeFiles/demo.dir/statistical_arbitrage.cpp.o -c /root/X-Trader/src/strategy/statistical_arbitrage.cpp
 
 strategy/CMakeFiles/demo.dir/statistical_arbitrage.cpp.i: cmake_force
@@ -212,7 +254,7 @@ strategy/CMakeFiles/demo.dir/statistical_arbitrage.cpp.s: cmake_force
 strategy/CMakeFiles/demo.dir/strategy_demo.cpp.o: strategy/CMakeFiles/demo.dir/flags.make
 strategy/CMakeFiles/demo.dir/strategy_demo.cpp.o: strategy/strategy_demo.cpp
 strategy/CMakeFiles/demo.dir/strategy_demo.cpp.o: strategy/CMakeFiles/demo.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/X-Trader/src/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object strategy/CMakeFiles/demo.dir/strategy_demo.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/X-Trader/src/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object strategy/CMakeFiles/demo.dir/strategy_demo.cpp.o"
 	cd /root/X-Trader/src/strategy && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT strategy/CMakeFiles/demo.dir/strategy_demo.cpp.o -MF CMakeFiles/demo.dir/strategy_demo.cpp.o.d -o CMakeFiles/demo.dir/strategy_demo.cpp.o -c /root/X-Trader/src/strategy/strategy_demo.cpp
 
 strategy/CMakeFiles/demo.dir/strategy_demo.cpp.i: cmake_force
@@ -227,13 +269,16 @@ strategy/CMakeFiles/demo.dir/strategy_demo.cpp.s: cmake_force
 demo_OBJECTS = \
 "CMakeFiles/demo.dir/decline_scalping.cpp.o" \
 "CMakeFiles/demo.dir/decline_swing.cpp.o" \
+"CMakeFiles/demo.dir/dual_thrust_trading_strategy.cpp.o" \
 "CMakeFiles/demo.dir/high_low.cpp.o" \
 "CMakeFiles/demo.dir/main.cpp.o" \
 "CMakeFiles/demo.dir/market_correction.cpp.o" \
 "CMakeFiles/demo.dir/market_making.cpp.o" \
 "CMakeFiles/demo.dir/order_flow.cpp.o" \
 "CMakeFiles/demo.dir/order_imbalance.cpp.o" \
+"CMakeFiles/demo.dir/rb_intraday_turtle.cpp.o" \
 "CMakeFiles/demo.dir/redis_client.cpp.o" \
+"CMakeFiles/demo.dir/simp_turtle_trading_strategy.cpp.o" \
 "CMakeFiles/demo.dir/statistical_arbitrage.cpp.o" \
 "CMakeFiles/demo.dir/strategy_demo.cpp.o"
 
@@ -242,21 +287,25 @@ demo_EXTERNAL_OBJECTS =
 
 /root/X-Trader/bin/demo: strategy/CMakeFiles/demo.dir/decline_scalping.cpp.o
 /root/X-Trader/bin/demo: strategy/CMakeFiles/demo.dir/decline_swing.cpp.o
+/root/X-Trader/bin/demo: strategy/CMakeFiles/demo.dir/dual_thrust_trading_strategy.cpp.o
 /root/X-Trader/bin/demo: strategy/CMakeFiles/demo.dir/high_low.cpp.o
 /root/X-Trader/bin/demo: strategy/CMakeFiles/demo.dir/main.cpp.o
 /root/X-Trader/bin/demo: strategy/CMakeFiles/demo.dir/market_correction.cpp.o
 /root/X-Trader/bin/demo: strategy/CMakeFiles/demo.dir/market_making.cpp.o
 /root/X-Trader/bin/demo: strategy/CMakeFiles/demo.dir/order_flow.cpp.o
 /root/X-Trader/bin/demo: strategy/CMakeFiles/demo.dir/order_imbalance.cpp.o
+/root/X-Trader/bin/demo: strategy/CMakeFiles/demo.dir/rb_intraday_turtle.cpp.o
 /root/X-Trader/bin/demo: strategy/CMakeFiles/demo.dir/redis_client.cpp.o
+/root/X-Trader/bin/demo: strategy/CMakeFiles/demo.dir/simp_turtle_trading_strategy.cpp.o
 /root/X-Trader/bin/demo: strategy/CMakeFiles/demo.dir/statistical_arbitrage.cpp.o
 /root/X-Trader/bin/demo: strategy/CMakeFiles/demo.dir/strategy_demo.cpp.o
 /root/X-Trader/bin/demo: strategy/CMakeFiles/demo.dir/build.make
 /root/X-Trader/bin/demo: /root/X-Trader/bin/libframework.a
 /root/X-Trader/bin/demo: /usr/lib/x86_64-linux-gnu/libhiredis.so
+/root/X-Trader/bin/demo: /usr/lib/x86_64-linux-gnu/libjsoncpp.so
 /root/X-Trader/bin/demo: /root/X-Trader/bin/libtrade-core.a
 /root/X-Trader/bin/demo: strategy/CMakeFiles/demo.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/root/X-Trader/src/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Linking CXX executable /root/X-Trader/bin/demo"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/root/X-Trader/src/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Linking CXX executable /root/X-Trader/bin/demo"
 	cd /root/X-Trader/src/strategy && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/demo.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

@@ -178,6 +178,30 @@ decline_swing.cpp.s:
 	cd /root/X-Trader/src && $(MAKE) $(MAKESILENT) -f strategy/CMakeFiles/demo.dir/build.make strategy/CMakeFiles/demo.dir/decline_swing.cpp.s
 .PHONY : decline_swing.cpp.s
 
+dual_thrust_trading_strategy.o: dual_thrust_trading_strategy.cpp.o
+.PHONY : dual_thrust_trading_strategy.o
+
+# target to build an object file
+dual_thrust_trading_strategy.cpp.o:
+	cd /root/X-Trader/src && $(MAKE) $(MAKESILENT) -f strategy/CMakeFiles/demo.dir/build.make strategy/CMakeFiles/demo.dir/dual_thrust_trading_strategy.cpp.o
+.PHONY : dual_thrust_trading_strategy.cpp.o
+
+dual_thrust_trading_strategy.i: dual_thrust_trading_strategy.cpp.i
+.PHONY : dual_thrust_trading_strategy.i
+
+# target to preprocess a source file
+dual_thrust_trading_strategy.cpp.i:
+	cd /root/X-Trader/src && $(MAKE) $(MAKESILENT) -f strategy/CMakeFiles/demo.dir/build.make strategy/CMakeFiles/demo.dir/dual_thrust_trading_strategy.cpp.i
+.PHONY : dual_thrust_trading_strategy.cpp.i
+
+dual_thrust_trading_strategy.s: dual_thrust_trading_strategy.cpp.s
+.PHONY : dual_thrust_trading_strategy.s
+
+# target to generate assembly for a file
+dual_thrust_trading_strategy.cpp.s:
+	cd /root/X-Trader/src && $(MAKE) $(MAKESILENT) -f strategy/CMakeFiles/demo.dir/build.make strategy/CMakeFiles/demo.dir/dual_thrust_trading_strategy.cpp.s
+.PHONY : dual_thrust_trading_strategy.cpp.s
+
 high_low.o: high_low.cpp.o
 .PHONY : high_low.o
 
@@ -322,6 +346,30 @@ order_imbalance.cpp.s:
 	cd /root/X-Trader/src && $(MAKE) $(MAKESILENT) -f strategy/CMakeFiles/demo.dir/build.make strategy/CMakeFiles/demo.dir/order_imbalance.cpp.s
 .PHONY : order_imbalance.cpp.s
 
+rb_intraday_turtle.o: rb_intraday_turtle.cpp.o
+.PHONY : rb_intraday_turtle.o
+
+# target to build an object file
+rb_intraday_turtle.cpp.o:
+	cd /root/X-Trader/src && $(MAKE) $(MAKESILENT) -f strategy/CMakeFiles/demo.dir/build.make strategy/CMakeFiles/demo.dir/rb_intraday_turtle.cpp.o
+.PHONY : rb_intraday_turtle.cpp.o
+
+rb_intraday_turtle.i: rb_intraday_turtle.cpp.i
+.PHONY : rb_intraday_turtle.i
+
+# target to preprocess a source file
+rb_intraday_turtle.cpp.i:
+	cd /root/X-Trader/src && $(MAKE) $(MAKESILENT) -f strategy/CMakeFiles/demo.dir/build.make strategy/CMakeFiles/demo.dir/rb_intraday_turtle.cpp.i
+.PHONY : rb_intraday_turtle.cpp.i
+
+rb_intraday_turtle.s: rb_intraday_turtle.cpp.s
+.PHONY : rb_intraday_turtle.s
+
+# target to generate assembly for a file
+rb_intraday_turtle.cpp.s:
+	cd /root/X-Trader/src && $(MAKE) $(MAKESILENT) -f strategy/CMakeFiles/demo.dir/build.make strategy/CMakeFiles/demo.dir/rb_intraday_turtle.cpp.s
+.PHONY : rb_intraday_turtle.cpp.s
+
 redis_client.o: redis_client.cpp.o
 .PHONY : redis_client.o
 
@@ -345,6 +393,30 @@ redis_client.s: redis_client.cpp.s
 redis_client.cpp.s:
 	cd /root/X-Trader/src && $(MAKE) $(MAKESILENT) -f strategy/CMakeFiles/demo.dir/build.make strategy/CMakeFiles/demo.dir/redis_client.cpp.s
 .PHONY : redis_client.cpp.s
+
+simp_turtle_trading_strategy.o: simp_turtle_trading_strategy.cpp.o
+.PHONY : simp_turtle_trading_strategy.o
+
+# target to build an object file
+simp_turtle_trading_strategy.cpp.o:
+	cd /root/X-Trader/src && $(MAKE) $(MAKESILENT) -f strategy/CMakeFiles/demo.dir/build.make strategy/CMakeFiles/demo.dir/simp_turtle_trading_strategy.cpp.o
+.PHONY : simp_turtle_trading_strategy.cpp.o
+
+simp_turtle_trading_strategy.i: simp_turtle_trading_strategy.cpp.i
+.PHONY : simp_turtle_trading_strategy.i
+
+# target to preprocess a source file
+simp_turtle_trading_strategy.cpp.i:
+	cd /root/X-Trader/src && $(MAKE) $(MAKESILENT) -f strategy/CMakeFiles/demo.dir/build.make strategy/CMakeFiles/demo.dir/simp_turtle_trading_strategy.cpp.i
+.PHONY : simp_turtle_trading_strategy.cpp.i
+
+simp_turtle_trading_strategy.s: simp_turtle_trading_strategy.cpp.s
+.PHONY : simp_turtle_trading_strategy.s
+
+# target to generate assembly for a file
+simp_turtle_trading_strategy.cpp.s:
+	cd /root/X-Trader/src && $(MAKE) $(MAKESILENT) -f strategy/CMakeFiles/demo.dir/build.make strategy/CMakeFiles/demo.dir/simp_turtle_trading_strategy.cpp.s
+.PHONY : simp_turtle_trading_strategy.cpp.s
 
 statistical_arbitrage.o: statistical_arbitrage.cpp.o
 .PHONY : statistical_arbitrage.o
@@ -409,6 +481,9 @@ help:
 	@echo "... decline_swing.o"
 	@echo "... decline_swing.i"
 	@echo "... decline_swing.s"
+	@echo "... dual_thrust_trading_strategy.o"
+	@echo "... dual_thrust_trading_strategy.i"
+	@echo "... dual_thrust_trading_strategy.s"
 	@echo "... high_low.o"
 	@echo "... high_low.i"
 	@echo "... high_low.s"
@@ -427,9 +502,15 @@ help:
 	@echo "... order_imbalance.o"
 	@echo "... order_imbalance.i"
 	@echo "... order_imbalance.s"
+	@echo "... rb_intraday_turtle.o"
+	@echo "... rb_intraday_turtle.i"
+	@echo "... rb_intraday_turtle.s"
 	@echo "... redis_client.o"
 	@echo "... redis_client.i"
 	@echo "... redis_client.s"
+	@echo "... simp_turtle_trading_strategy.o"
+	@echo "... simp_turtle_trading_strategy.i"
+	@echo "... simp_turtle_trading_strategy.s"
 	@echo "... statistical_arbitrage.o"
 	@echo "... statistical_arbitrage.i"
 	@echo "... statistical_arbitrage.s"

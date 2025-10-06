@@ -198,9 +198,11 @@ strategy/CMakeFiles/demo.dir/redis_client.cpp.o: \
  /usr/include/c++/13/bits/ranges_uninitialized.h \
  /usr/include/c++/13/bits/ranges_algobase.h \
  /usr/include/c++/13/pstl/glue_memory_defs.h \
- /usr/include/c++/13/pstl/execution_defs.h /usr/include/hiredis/hiredis.h \
+ /usr/include/c++/13/pstl/execution_defs.h /usr/include/c++/13/vector \
+ /usr/include/c++/13/bits/stl_vector.h \
+ /usr/include/c++/13/bits/stl_bvector.h \
+ /usr/include/c++/13/bits/vector.tcc /usr/include/hiredis/hiredis.h \
  /usr/include/hiredis/read.h /usr/include/x86_64-linux-gnu/sys/time.h \
  /usr/include/hiredis/sds.h /usr/include/hiredis/alloc.h \
  /usr/include/c++/13/iostream /usr/include/c++/13/istream \
- /usr/include/c++/13/bits/istream.tcc /usr/include/c++/13/cstring \
- /usr/include/string.h /usr/include/strings.h
+ /usr/include/c++/13/bits/istream.tcc

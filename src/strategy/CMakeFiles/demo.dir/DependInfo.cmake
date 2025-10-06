@@ -10,13 +10,16 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/root/X-Trader/src/strategy/decline_scalping.cpp" "strategy/CMakeFiles/demo.dir/decline_scalping.cpp.o" "gcc" "strategy/CMakeFiles/demo.dir/decline_scalping.cpp.o.d"
   "/root/X-Trader/src/strategy/decline_swing.cpp" "strategy/CMakeFiles/demo.dir/decline_swing.cpp.o" "gcc" "strategy/CMakeFiles/demo.dir/decline_swing.cpp.o.d"
+  "/root/X-Trader/src/strategy/dual_thrust_trading_strategy.cpp" "strategy/CMakeFiles/demo.dir/dual_thrust_trading_strategy.cpp.o" "gcc" "strategy/CMakeFiles/demo.dir/dual_thrust_trading_strategy.cpp.o.d"
   "/root/X-Trader/src/strategy/high_low.cpp" "strategy/CMakeFiles/demo.dir/high_low.cpp.o" "gcc" "strategy/CMakeFiles/demo.dir/high_low.cpp.o.d"
   "/root/X-Trader/src/strategy/main.cpp" "strategy/CMakeFiles/demo.dir/main.cpp.o" "gcc" "strategy/CMakeFiles/demo.dir/main.cpp.o.d"
   "/root/X-Trader/src/strategy/market_correction.cpp" "strategy/CMakeFiles/demo.dir/market_correction.cpp.o" "gcc" "strategy/CMakeFiles/demo.dir/market_correction.cpp.o.d"
   "/root/X-Trader/src/strategy/market_making.cpp" "strategy/CMakeFiles/demo.dir/market_making.cpp.o" "gcc" "strategy/CMakeFiles/demo.dir/market_making.cpp.o.d"
   "/root/X-Trader/src/strategy/order_flow.cpp" "strategy/CMakeFiles/demo.dir/order_flow.cpp.o" "gcc" "strategy/CMakeFiles/demo.dir/order_flow.cpp.o.d"
   "/root/X-Trader/src/strategy/order_imbalance.cpp" "strategy/CMakeFiles/demo.dir/order_imbalance.cpp.o" "gcc" "strategy/CMakeFiles/demo.dir/order_imbalance.cpp.o.d"
+  "/root/X-Trader/src/strategy/rb_intraday_turtle.cpp" "strategy/CMakeFiles/demo.dir/rb_intraday_turtle.cpp.o" "gcc" "strategy/CMakeFiles/demo.dir/rb_intraday_turtle.cpp.o.d"
   "/root/X-Trader/src/strategy/redis_client.cpp" "strategy/CMakeFiles/demo.dir/redis_client.cpp.o" "gcc" "strategy/CMakeFiles/demo.dir/redis_client.cpp.o.d"
+  "/root/X-Trader/src/strategy/simp_turtle_trading_strategy.cpp" "strategy/CMakeFiles/demo.dir/simp_turtle_trading_strategy.cpp.o" "gcc" "strategy/CMakeFiles/demo.dir/simp_turtle_trading_strategy.cpp.o.d"
   "/root/X-Trader/src/strategy/statistical_arbitrage.cpp" "strategy/CMakeFiles/demo.dir/statistical_arbitrage.cpp.o" "gcc" "strategy/CMakeFiles/demo.dir/statistical_arbitrage.cpp.o.d"
   "/root/X-Trader/src/strategy/strategy_demo.cpp" "strategy/CMakeFiles/demo.dir/strategy_demo.cpp.o" "gcc" "strategy/CMakeFiles/demo.dir/strategy_demo.cpp.o.d"
   )

@@ -249,6 +249,15 @@ strategy/CMakeFiles/demo.dir/main.cpp.o: \
  /usr/lib/gcc/x86_64-linux-gnu/13/include/float.h \
  /root/X-Trader/src/strategy/market_correction.h \
  /root/X-Trader/src/strategy/strategy_demo.h \
+ /root/X-Trader/src/strategy/dual_thrust_trading_strategy.h \
+ /root/X-Trader/src/strategy/Logger.h /usr/include/c++/13/memory \
+ /usr/include/c++/13/bits/stl_raw_storage_iter.h \
+ /usr/include/c++/13/bits/shared_ptr_atomic.h \
+ /usr/include/c++/13/backward/auto_ptr.h \
+ /usr/include/c++/13/bits/ranges_uninitialized.h \
+ /usr/include/c++/13/bits/ranges_algobase.h \
+ /usr/include/c++/13/pstl/glue_memory_defs.h \
+ /usr/include/c++/13/pstl/execution_defs.h \
  /root/X-Trader/src/include/spdlog/spdlog.h \
  /root/X-Trader/src/include/spdlog/common.h \
  /root/X-Trader/src/include/spdlog/details/null_mutex.h \
@@ -257,13 +266,6 @@ strategy/CMakeFiles/demo.dir/main.cpp.o: \
  /usr/include/c++/13/bits/chrono_io.h /usr/include/c++/13/format \
  /usr/include/c++/13/charconv /usr/include/c++/13/optional \
  /usr/include/c++/13/span /usr/include/c++/13/variant \
- /usr/include/c++/13/bits/ranges_algobase.h /usr/include/c++/13/memory \
- /usr/include/c++/13/bits/stl_raw_storage_iter.h \
- /usr/include/c++/13/bits/shared_ptr_atomic.h \
- /usr/include/c++/13/backward/auto_ptr.h \
- /usr/include/c++/13/bits/ranges_uninitialized.h \
- /usr/include/c++/13/pstl/glue_memory_defs.h \
- /usr/include/c++/13/pstl/execution_defs.h \
  /root/X-Trader/src/include/spdlog/fmt/fmt.h \
  /root/X-Trader/src/include/spdlog/fmt/bundled/format.h \
  /root/X-Trader/src/include/spdlog/fmt/bundled/base.h \
@@ -345,18 +347,23 @@ strategy/CMakeFiles/demo.dir/main.cpp.o: \
  /root/X-Trader/src/include/spdlog/details/synchronous_factory.h \
  /root/X-Trader/src/include/spdlog/version.h \
  /root/X-Trader/src/include/spdlog/spdlog-inl.h \
- /root/X-Trader/src/include/spdlog/sinks/stdout_color_sinks.h \
- /root/X-Trader/src/include/spdlog/sinks/stdout_color_sinks-inl.h \
- /root/X-Trader/src/include/spdlog/sinks/basic_file_sink.h \
+ /root/X-Trader/src/include/spdlog/sinks/daily_file_sink.h \
  /root/X-Trader/src/include/spdlog/details/file_helper.h \
  /root/X-Trader/src/include/spdlog/details/file_helper-inl.h \
- /root/X-Trader/src/include/spdlog/sinks/base_sink.h \
- /root/X-Trader/src/include/spdlog/sinks/base_sink-inl.h \
- /root/X-Trader/src/include/spdlog/sinks/basic_file_sink-inl.h \
- /root/X-Trader/src/strategy/Logger.h \
- /root/X-Trader/src/include/spdlog/sinks/daily_file_sink.h \
  /root/X-Trader/src/include/spdlog/fmt/chrono.h \
  /root/X-Trader/src/include/spdlog/fmt/bundled/chrono.h \
+ /root/X-Trader/src/include/spdlog/sinks/base_sink.h \
+ /root/X-Trader/src/include/spdlog/sinks/base_sink-inl.h \
+ /root/X-Trader/src/include/spdlog/sinks/stdout_color_sinks.h \
+ /root/X-Trader/src/include/spdlog/sinks/stdout_color_sinks-inl.h \
+ /usr/include/c++/13/deque /usr/include/c++/13/bits/stl_deque.h \
+ /usr/include/c++/13/bits/deque.tcc \
+ /root/X-Trader/src/include/spdlog/sinks/basic_file_sink.h \
+ /root/X-Trader/src/include/spdlog/sinks/basic_file_sink-inl.h \
  /root/X-Trader/src/strategy/redis_client.h \
  /usr/include/hiredis/hiredis.h /usr/include/hiredis/read.h \
- /usr/include/hiredis/sds.h /usr/include/hiredis/alloc.h
+ /usr/include/hiredis/sds.h /usr/include/hiredis/alloc.h \
+ /root/X-Trader/src/include/CurlSender.h /usr/include/c++/13/fstream \
+ /usr/include/x86_64-linux-gnu/c++/13/bits/basic_file.h \
+ /usr/include/x86_64-linux-gnu/c++/13/bits/c++io.h \
+ /usr/include/c++/13/bits/fstream.tcc /usr/include/c++/13/iostream
