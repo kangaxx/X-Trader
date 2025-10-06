@@ -101,6 +101,7 @@ private:
 
     std::string _cur_minute;         // 当前分钟
     DTBarData _cur_bar{};            // 当前bar
+	DTBarData _today_bar{};          // 今日日k线
 
     std::deque<DTBarData> _bar_history;      // bar历史队列
     std::vector<DTBarData> _history;         // 历史K线数据
@@ -117,4 +118,7 @@ private:
     // 计算止盈数值
     // direction: 1=多头，-1=空头
     double calc_take_profit(double entry_price, double volatility, double current_price, double trailing_extreme, double fixed_value, double ratio_value, int direction);
+
+    // 从基准区间计算波动率
+    double calc_range_from_base_bars(const std::vector<DTBarData>& bars);
 };

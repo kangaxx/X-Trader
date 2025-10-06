@@ -186,6 +186,40 @@ void dual_thrust_trading_strategy::on_error(const Order& order)
  * 3. 仔细分析仿真/实盘的开平仓逻辑
  */
 void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
+    // 合并分钟K线为日K线
+    std::string bar_day = bar.date_str.substr(0, 10); // "YYYY-MM-DD"
+    std::string today_day = _today_bar.date_str.empty() ? "" : _today_bar.date_str.substr(0, 10);
+
+    if (_today_bar.date_str.empty() || bar_day == today_day) {
+        // 同一天，合并到_today_bar
+        if (_today_bar.date_str.empty()) {
+            _today_bar = bar;
+            _today_bar.date_str = bar_day; // 只保留日期部分
+        } else {
+            _today_bar.high = std::max(_today_bar.high, bar.high);
+            _today_bar.low = std::min(_today_bar.low, bar.low);
+            _today_bar.close = bar.close;
+            _today_bar.volume += bar.volume;
+            _today_bar.datetime = bar.datetime; // 可选：记录最后一根bar的时间
+        }
+    } else {
+        // 日期变更，先将上一天的_today_bar加入_base_bars
+        if (_base_bars.size() >= static_cast<size_t>(_base_days)) {
+            _base_bars.erase(_base_bars.begin());
+        }
+        _base_bars.push_back(_today_bar);
+        // 用新_base_bars数据计算range
+        if (_base_bars.size() < static_cast<size_t>(_n)) {
+            Logger::get_instance().error("DualThrust: not enough base bars to calculate range");
+            _range = 0.0;
+            return;
+        }
+        _range = calc_range_from_base_bars(_base_bars);
+        // 新的一天，重置_today_bar
+        _today_bar = bar;
+        _today_bar.date_str = bar_day;
+    }
+
     _bar_history.push_back(bar);
     if (_bar_history.size() > _n + 1) _bar_history.pop_front();
 
@@ -203,6 +237,7 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
     double open = bar.open;
     double buy_line = open + _k1 * _range;
     double sell_line = open - _k2 * _range;
+	
 
     // 仿真模式下详细日志，便于调试
     if (_is_sim) {
@@ -426,6 +461,27 @@ static std::string extract_date(const std::string& datetime_str) {
     return datetime_str;
 }
 
+// 新增：私有函数，基于base_bars计算range
+double dual_thrust_trading_strategy::calc_range_from_base_bars(const std::vector<DTBarData>& bars) {
+    if (bars.empty()) return 0.0;
+    double hh = bars[0].high, ll = bars[0].low;
+    double hc = bars[0].close, lc = bars[0].close;
+    for (size_t i = 1; i < bars.size(); ++i) {
+        hh = std::max(hh, bars[i].high);
+        ll = std::min(ll, bars[i].low);
+        hc = std::max(hc, bars[i].close);
+        lc = std::min(lc, bars[i].close);
+    }
+    double range = std::max(hh - lc, hc - ll);
+
+    // 打印range到debug日志
+    std::ostringstream oss_range;
+    oss_range << "[BASE_RANGE] range=" << range << ", hh=" << hh << ", ll=" << ll << ", hc=" << hc << ", lc=" << lc;
+    Logger::get_instance().debug(oss_range.str());
+
+    return range;
+}
+
 void dual_thrust_trading_strategy::generate_base_bars() {
     // 1. 先按日期聚合，得到每个交易日的所有分钟K线
     std::map<std::string, std::vector<DTBarData>> date_to_bars;
@@ -486,20 +542,7 @@ void dual_thrust_trading_strategy::generate_base_bars() {
         _range = 0.0;
         return;
     }
-    double hh = _base_bars[0].high, ll = _base_bars[0].low;
-    double hc = _base_bars[0].close, lc = _base_bars[0].close;
-    for (size_t i = 1; i < _base_bars.size(); ++i) {
-        hh = std::max(hh, _base_bars[i].high);
-        ll = std::min(ll, _base_bars[i].low);
-        hc = std::max(hc, _base_bars[i].close);
-        lc = std::min(lc, _base_bars[i].close);
-    }
-    _range = std::max(hh - lc, hc - ll);
-
-    // 打印range到debug日志
-    std::ostringstream oss_range;
-    oss_range << "[BASE_RANGE] range=" << _range << ", hh=" << hh << ", ll=" << ll << ", hc=" << hc << ", lc=" << lc;
-    Logger::get_instance().debug(oss_range.str());
+    _range = calc_range_from_base_bars(_base_bars);
 }
 
 /**
