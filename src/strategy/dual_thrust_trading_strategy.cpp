@@ -17,8 +17,11 @@ dual_thrust_trading_strategy::dual_thrust_trading_strategy(stratid_t id, frame& 
       _is_sim(is_sim), _hist_file(hist_file), _sim_start_date(sim_start_date), _base_days(base_days), _end_time(end_time)
 {
     get_contracts().insert(contract);
-    if (_is_sim && !_hist_file.empty()) {
+    if (!_hist_file.empty()) {
         load_history(_hist_file);
+        generate_base_bars(); // 新增：生成_base_bars日K线
+	}
+    if (_is_sim && !_hist_file.empty()) {
         prepare_simulation();
         simulation_interactive();
     }
@@ -179,7 +182,7 @@ void dual_thrust_trading_strategy::on_error(const Order& order)
  * bar数据处理
  * 1. 维护bar历史队列
  * 2. 计算Dual Thrust买卖线
- * 3. 仿真/实盘分别处理开平仓逻辑
+ * 3. 仔细分析仿真/实盘的开平仓逻辑
  */
 void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
     _bar_history.push_back(bar);
@@ -197,23 +200,14 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
     if (ref_bars.empty()) return;
 
     // 计算区间最高、最低、收盘价
-    double hh = ref_bars[0].high, ll = ref_bars[0].low;
-    double hc = ref_bars[0].close, lc = ref_bars[0].close;
-    for (size_t i = 1; i < ref_bars.size(); ++i) {
-        hh = std::max(hh, ref_bars[i].high);
-        ll = std::min(ll, ref_bars[i].low);
-        hc = std::max(hc, ref_bars[i].close);
-        lc = std::min(lc, ref_bars[i].close);
-    }
-    double range = std::max(hh - lc, hc - ll);
     double open = bar.open;
-    double buy_line = open + _k1 * range;
-    double sell_line = open - _k2 * range;
+    double buy_line = open + _k1 * _range;
+    double sell_line = open - _k2 * _range;
 
     if (_is_sim) {
         // 仿真模式下详细日志，便于调试
-        std::ostringstream oss;
-        oss << "[SIM] Bar: date=" << bar.date_str
+        std::ostringstream oss_bar_info;
+        oss_bar_info << "[SIM] Bar: date=" << bar.date_str
             << ", open=" << bar.open
             << ", high=" << bar.high
             << ", low=" << bar.low
@@ -229,8 +223,9 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
             << ", long_pos=" << _sim_pos.long_pos
             << ", short_pos=" << _sim_pos.short_pos
             << ", profit=" << _sim_pos.profit;
-        Logger::get_instance().debug(oss.str());
+		Logger::get_instance().Debug(oss_bar_info.str());
 
+        // 增强版开平仓逻辑
         if (bar.close > buy_line && _sim_pos.long_pos == 0) {
             _sim_pos.long_pos = _once_vol;
             _sim_pos.long_entry = bar.close;
@@ -278,7 +273,7 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
             _sim_pos.short_pos = 0;
         }
     } else {
-        // 实盘模式下开平仓
+        // 实盘模式下开平仓逻辑
         const auto& posi = get_position(_contract);
         if (bar.close > buy_line && posi.long_.position == 0) {
             buy_open(eOrderFlag::Limit, _contract, bar.close, _once_vol);
@@ -383,20 +378,92 @@ void dual_thrust_trading_strategy::load_history(const std::string& file) {
 }
 
 /**
- * 仿真准备，分割基准区间和仿真区间
+ * 新增：生成_base_bars日K线（由分钟K线聚合而成）
  */
-void dual_thrust_trading_strategy::prepare_simulation() {
-    size_t start_idx = 0;
-    for (; start_idx < _history.size(); ++start_idx) {
-        if (_history[start_idx].date_str >= _sim_start_date) break;
+void dual_thrust_trading_strategy::generate_base_bars() {
+    // 1. 先按日期聚合，得到每个交易日的所有分钟K线
+    std::map<std::string, std::vector<DTBarData>> date_to_bars;
+    for (const auto& bar : _history) {
+        if (bar.date_str < _sim_start_date) {
+            date_to_bars[bar.date_str].push_back(bar);
+        }
     }
-    if (start_idx < _base_days) {
-        std::string str = "DualThrust: not enough base days before sim_start_date";
-        Logger::get_instance().error(str);
+    // 2. 按日期排序，取最后_base_days天
+    std::vector<std::string> all_dates;
+    for (const auto& kv : date_to_bars) {
+        all_dates.push_back(kv.first);
+    }
+    std::sort(all_dates.begin(), all_dates.end());
+    if (all_dates.size() < static_cast<size_t>(_base_days)) {
+        Logger::get_instance().error("DualThrust: not enough base days before sim_start_date");
         return;
     }
-    _base_bars.assign(_history.begin() + (start_idx - _base_days), _history.begin() + start_idx);
-    _sim_bars.assign(_history.begin() + start_idx, _history.end());
+    _base_bars.clear();
+    for (size_t i = all_dates.size() - _base_days; i < all_dates.size(); ++i) {
+        const auto& bars = date_to_bars[all_dates[i]];
+        if (bars.empty()) continue;
+        DTBarData daily{};
+        daily.date_str = all_dates[i];
+        daily.open = bars.front().open;
+        daily.high = bars.front().high;
+        daily.low = bars.front().low;
+        daily.close = bars.back().close;
+        daily.volume = 0;
+        for (const auto& b : bars) {
+            daily.high = std::max(daily.high, b.high);
+            daily.low = std::min(daily.low, b.low);
+            daily.volume += b.volume;
+        }
+        // 记录该日的第一个分钟K线的datetime为日K线的datetime
+        daily.datetime = bars.front().datetime;
+
+        // 打印daily信息到debug日志
+        std::ostringstream oss;
+        oss << "[BASE_DAILY] date=" << daily.date_str
+            << ", open=" << daily.open
+            << ", high=" << daily.high
+            << ", low=" << daily.low
+            << ", close=" << daily.close
+            << ", volume=" << daily.volume
+            << ", datetime=" << daily.datetime;
+        Logger::get_instance().Debug(oss.str());
+
+        _base_bars.push_back(daily);
+    }
+
+    // 3. 用_base_bars数据计算range
+    if (_base_bars.size() < static_cast<size_t>(_n)) {
+        Logger::get_instance().error("DualThrust: not enough base bars to calculate range");
+        _range = 0.0;
+        return;
+    }
+    double hh = _base_bars[0].high, ll = _base_bars[0].low;
+    double hc = _base_bars[0].close, lc = _base_bars[0].close;
+    for (size_t i = 1; i < _base_bars.size(); ++i) {
+        hh = std::max(hh, _base_bars[i].high);
+        ll = std::min(ll, _base_bars[i].low);
+        hc = std::max(hc, _base_bars[i].close);
+        lc = std::min(lc, _base_bars[i].close);
+    }
+    _range = std::max(hh - lc, hc - ll);
+
+    // 打印range到debug日志
+    std::ostringstream oss_range;
+    oss_range << "[BASE_RANGE] range=" << _range << ", hh=" << hh << ", ll=" << ll << ", hc=" << hc << ", lc=" << lc;
+    Logger::get_instance().Debug(oss_range.str());
+}
+
+/**
+ * 仿真准备，分割基准区间和仿真区间
+ * _base_bars 由 generate_base_bars 生成
+ */
+void dual_thrust_trading_strategy::prepare_simulation() {
+    // 仿真区间依然用原始分钟K线
+    size_t sim_start_idx = 0;
+    for (; sim_start_idx < _history.size(); ++sim_start_idx) {
+        if (_history[sim_start_idx].date_str >= _sim_start_date) break;
+    }
+    _sim_bars.assign(_history.begin() + sim_start_idx, _history.end());
     _bar_cursor = 0;
     std::ostringstream oss;
     oss << "DualThrust: simulation start at " << _sim_start_date

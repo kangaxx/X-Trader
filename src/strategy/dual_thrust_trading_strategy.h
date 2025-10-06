@@ -72,6 +72,8 @@ private:
     void force_close_realtime(const DTBarData& bar);
     // 加载历史K线数据
     void load_history(const std::string& file);
+	// 生成仿真基准区间（日K线）
+	void generate_base_bars();
     // 仿真准备（分割基准区间和仿真区间）
     void prepare_simulation();
     // 仿真交互操作
@@ -98,4 +100,5 @@ private:
     SimPosition _sim_pos;                    // 仿真持仓
     std::set<orderref_t> _buy_open_orders, _sell_open_orders; // 买开/卖开挂单引用
     bool _is_closing = false;                // 是否收盘强平标志
+	double _range;                           // 价格区间
 };
