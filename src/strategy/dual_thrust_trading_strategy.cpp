@@ -320,25 +320,57 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
             if (bar.close < sell_line) {
                 double profit = (bar.close - _sim_pos.long_entry) * _sim_pos.long_pos;
                 _sim_pos.profit += profit;
+                // 统计胜率、盈亏比、交易次数
+                _sim_trades++;
+                static int win_count = 0;
+                static double total_win = 0.0, total_loss = 0.0;
+                if (profit > 0) {
+                    win_count++;
+                    total_win += profit;
+                } else {
+                    total_loss += -profit;
+                }
+                _sim_win_rate = _sim_trades > 0 ? static_cast<double>(win_count) / _sim_trades : 0.0;
+                _sim_profit_loss_rate = total_loss > 0 ? total_win / total_loss : 0.0;
+
                 std::ostringstream oss2;
                 oss2 << "[SIM] CLOSE LONG: date=" << bar.date_str
                      << ", price=" << bar.close
                      << ", entry=" << _sim_pos.long_entry
                      << ", sell_line=" << sell_line
                      << ", profit=" << profit
-                     << ", total_profit=" << _sim_pos.profit;
+                     << ", total_profit=" << _sim_pos.profit
+                     << ", sim_win_rate=" << _sim_win_rate
+                     << ", sim_profit_loss_rate=" << _sim_profit_loss_rate
+                     << ", sim_trades=" << _sim_trades;
                 Logger::get_instance().info(oss2.str());
                 _sim_pos.long_pos = 0;
             } else if (bar.close >= _sim_pos.long_take_profit) {
                 double profit = (_sim_pos.long_take_profit - _sim_pos.long_entry) * _sim_pos.long_pos;
                 _sim_pos.profit += profit;
+                // 统计胜率、盈亏比、交易次数
+                _sim_trades++;
+                static int win_count = 0;
+                static double total_win = 0.0, total_loss = 0.0;
+                if (profit > 0) {
+                    win_count++;
+                    total_win += profit;
+                } else {
+                    total_loss += -profit;
+                }
+                _sim_win_rate = _sim_trades > 0 ? static_cast<double>(win_count) / _sim_trades : 0.0;
+                _sim_profit_loss_rate = total_loss > 0 ? total_win / total_loss : 0.0;
+
                 std::ostringstream oss2;
                 oss2 << "[SIM] TAKE PROFIT LONG: date=" << bar.date_str
                      << ", price=" << bar.close
                      << ", entry=" << _sim_pos.long_entry
                      << ", take_profit=" << _sim_pos.long_take_profit
                      << ", profit=" << profit
-                     << ", total_profit=" << _sim_pos.profit;
+                     << ", total_profit=" << _sim_pos.profit
+                     << ", sim_win_rate=" << _sim_win_rate
+                     << ", sim_profit_loss_rate=" << _sim_profit_loss_rate
+                     << ", sim_trades=" << _sim_trades;
                 Logger::get_instance().info(oss2.str());
                 _sim_pos.long_pos = 0;
             }
@@ -348,25 +380,57 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
             if (bar.close > buy_line) {
                 double profit = (_sim_pos.short_entry - bar.close) * _sim_pos.short_pos;
                 _sim_pos.profit += profit;
+                // 统计胜率、盈亏比、交易次数
+                _sim_trades++;
+                static int win_count = 0;
+                static double total_win = 0.0, total_loss = 0.0;
+                if (profit > 0) {
+                    win_count++;
+                    total_win += profit;
+                } else {
+                    total_loss += -profit;
+                }
+                _sim_win_rate = _sim_trades > 0 ? static_cast<double>(win_count) / _sim_trades : 0.0;
+                _sim_profit_loss_rate = total_loss > 0 ? total_win / total_loss : 0.0;
+
                 std::ostringstream oss2;
                 oss2 << "[SIM] CLOSE SHORT: date=" << bar.date_str
                      << ", price=" << bar.close
                      << ", entry=" << _sim_pos.short_entry
                      << ", buy_line=" << buy_line
                      << ", profit=" << profit
-                     << ", total_profit=" << _sim_pos.profit;
+                     << ", total_profit=" << _sim_pos.profit
+                     << ", sim_win_rate=" << _sim_win_rate
+                     << ", sim_profit_loss_rate=" << _sim_profit_loss_rate
+                     << ", sim_trades=" << _sim_trades;
                 Logger::get_instance().info(oss2.str());
                 _sim_pos.short_pos = 0;
             } else if (bar.close <= _sim_pos.short_take_profit) {
                 double profit = (_sim_pos.short_entry - _sim_pos.short_take_profit) * _sim_pos.short_pos;
                 _sim_pos.profit += profit;
+                // 统计胜率、盈亏比、交易次数
+                _sim_trades++;
+                static int win_count = 0;
+                static double total_win = 0.0, total_loss = 0.0;
+                if (profit > 0) {
+                    win_count++;
+                    total_win += profit;
+                } else {
+                    total_loss += -profit;
+                }
+                _sim_win_rate = _sim_trades > 0 ? static_cast<double>(win_count) / _sim_trades : 0.0;
+                _sim_profit_loss_rate = total_loss > 0 ? total_win / total_loss : 0.0;
+
                 std::ostringstream oss2;
                 oss2 << "[SIM] TAKE PROFIT SHORT: date=" << bar.date_str
                      << ", price=" << bar.close
                      << ", entry=" << _sim_pos.short_entry
                      << ", take_profit=" << _sim_pos.short_take_profit
                      << ", profit=" << profit
-                     << ", total_profit=" << _sim_pos.profit;
+                     << ", total_profit=" << _sim_pos.profit
+                     << ", sim_win_rate=" << _sim_win_rate
+                     << ", sim_profit_loss_rate=" << _sim_profit_loss_rate
+                     << ", sim_trades=" << _sim_trades;
                 Logger::get_instance().info(oss2.str());
                 _sim_pos.short_pos = 0;
             }
