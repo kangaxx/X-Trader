@@ -289,7 +289,7 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
             _sim_pos.long_entry = bar.close;
             _sim_pos.long_take_profit = calc_take_profit(
                 _sim_pos.long_entry, _range, bar.close, bar.high, _range * 1.5, 0.02, 1,
-                -9999.9999);
+                -999.9);
             std::ostringstream oss2;
             oss2 << "[SIM] BUY OPEN: date=" << bar.date_str
                  << ", price=" << bar.close
@@ -304,7 +304,7 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
             _sim_pos.short_entry = bar.close;
             _sim_pos.short_take_profit = calc_take_profit(
                 _sim_pos.short_entry, _range, bar.close, bar.low, _range * 1.5, 0.02, -1,
-				-9999.9999);
+				-999.9);
             std::ostringstream oss2;
             oss2 << "[SIM] SELL OPEN: date=" << bar.date_str
                  << ", price=" << bar.close
@@ -343,7 +343,7 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
                      << ", sim_trades=" << _sim_trades;
                 Logger::get_instance().info(oss2.str());
                 _sim_pos.long_pos = 0;
-            } else if (bar.close >= _sim_pos.long_take_profit && _sim_pos.long_take_profit != -9999.9999) {
+            } else if (bar.close >= _sim_pos.long_take_profit && _sim_pos.long_take_profit != -999.9) {
                 double profit = (_sim_pos.long_take_profit - _sim_pos.long_entry) * _sim_pos.long_pos;
                 _sim_pos.profit += profit;
                 // 统计胜率、盈亏比、交易次数
@@ -401,7 +401,7 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
                      << ", sim_trades=" << _sim_trades;
                 Logger::get_instance().info(oss2.str());
                 _sim_pos.short_pos = 0;
-            } else if (bar.close <= _sim_pos.short_take_profit && _sim_pos.short_take_profit != -9999.9999) {
+            } else if (bar.close <= _sim_pos.short_take_profit && _sim_pos.short_take_profit != -999.9) {
                 double profit = (_sim_pos.short_entry - _sim_pos.short_take_profit) * _sim_pos.short_pos;
                 _sim_pos.profit += profit;
                 // 统计胜率、盈亏比、交易次数
@@ -793,7 +793,7 @@ double dual_thrust_trading_strategy::calc_atr_trailing_stop(
     int direction,
     double cur_take_profit)
 {
-    if (bars.size() != static_cast<size_t>(atr_period) || bars.size() < 2) return -9999.9999;
+    if (bars.size() != static_cast<size_t>(atr_period) || bars.size() < 2) return -999.9;
 
     // 计算ATR
     double atr_sum = 0.0;
@@ -829,7 +829,7 @@ double dual_thrust_trading_strategy::calc_atr_trailing_stop(
     oss << "  new_tp(before limit)=" << new_tp << "\n";
 
     // 多头止盈点只允许上升，空头止盈点只允许下降
-    double final_tp = cur_take_profit == -9999.9999 ? new_tp :
+    double final_tp = cur_take_profit == -999.9 ? new_tp :
         (direction == 1 ? std::max(cur_take_profit, new_tp) : std::min(cur_take_profit, new_tp));
     oss << "  final_tp=" << final_tp;
 
