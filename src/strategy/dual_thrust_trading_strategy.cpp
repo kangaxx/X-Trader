@@ -761,6 +761,7 @@ double dual_thrust_trading_strategy::calc_take_profit(
     constexpr int atr_period = 15;
     double atr_mult = 2; // 可根据实际策略调整
     std::deque<DTBarData> atr_bars(_bar_history.end() - atr_period, _bar_history.end());
+	double new_tp = 0.0;
     //end
 
     switch (_take_profit_type) {
@@ -772,7 +773,7 @@ double dual_thrust_trading_strategy::calc_take_profit(
         return entry_price * (1.0 + direction * ratio_value);
     case TakeProfitType::Volatility:
 		// 使用atr移动止损算法计算止盈点
-		double new_tp = calc_atr_trailing_stop(atr_bars, atr_period, atr_mult, entry_price, direction, trailing_extreme);
+		new_tp = calc_atr_trailing_stop(atr_bars, atr_period, atr_mult, entry_price, direction, trailing_extreme);
         if (new_tp == -999.99) {
             // 计算失败时，返回当前价格作为止盈点，避免无效值
             return trailing_extreme;
