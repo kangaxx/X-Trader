@@ -189,7 +189,7 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
     // 合并分钟K线为日K线
     std::string bar_day = bar.date_str.substr(0, 10); // "YYYY-MM-DD"
     std::string today_day = _today_bar.date_str.empty() ? "" : _today_bar.date_str.substr(0, 10);
-
+    Logger::get_instance().debug("0"); //temp
     // 提取bar的时分
     std::string bar_time = (bar.date_str.size() >= 16) ? bar.date_str.substr(11, 5) : "";
     bool is_after_end_time = (!bar_time.empty() && bar_time >= _end_time);
@@ -284,7 +284,7 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
             << ", long_tp=" << _sim_pos.long_take_profit
             << ", short_tp=" << _sim_pos.short_take_profit;
         Logger::get_instance().debug(oss_bar_info.str());
-
+		Logger::get_instance().debug("1"); //temp
         // 多头开仓
         if (bar.close > buy_line && _sim_pos.long_pos == 0) {
             _sim_pos.long_pos = _once_vol;
@@ -433,6 +433,7 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
                 _sim_pos.short_pos = 0;
             }
         }
+        Logger::get_instance().debug("2"); //temp
     } else {
         // 实盘模式下开平仓逻辑
         const auto& posi = get_position(_contract);
