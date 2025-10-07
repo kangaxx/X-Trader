@@ -189,7 +189,6 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
     // 合并分钟K线为日K线
     std::string bar_day = bar.date_str.substr(0, 10); // "YYYY-MM-DD"
     std::string today_day = _today_bar.date_str.empty() ? "" : _today_bar.date_str.substr(0, 10);
-    Logger::get_instance().debug("0"); //temp
     // 提取bar的时分
     std::string bar_time = (bar.date_str.size() >= 16) ? bar.date_str.substr(11, 5) : "";
     bool is_after_end_time = (!bar_time.empty() && bar_time >= _end_time);
@@ -284,14 +283,13 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
             << ", long_tp=" << _sim_pos.long_take_profit
             << ", short_tp=" << _sim_pos.short_take_profit;
         Logger::get_instance().debug(oss_bar_info.str());
-		Logger::get_instance().debug("1"); //temp
         // 多头开仓
         if (bar.close > buy_line && _sim_pos.long_pos == 0) {
             _sim_pos.long_pos = _once_vol;
             _sim_pos.long_entry = bar.close;
             _sim_pos.long_take_profit = calc_take_profit(
-                _sim_pos.long_entry, _range, bar.close, bar.high, _range * 1.5, 0.02, 1
-            );
+                _sim_pos.long_entry, _range, bar.close, bar.high, _range * 1.5, 0.02, 1,
+                sell_line);
             std::ostringstream oss2;
             oss2 << "[SIM] BUY OPEN: date=" << bar.date_str
                  << ", price=" << bar.close
@@ -305,8 +303,8 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
             _sim_pos.short_pos = _once_vol;
             _sim_pos.short_entry = bar.close;
             _sim_pos.short_take_profit = calc_take_profit(
-                _sim_pos.short_entry, _range, bar.close, bar.low, _range * 1.5, 0.02, -1
-            );
+                _sim_pos.short_entry, _range, bar.close, bar.low, _range * 1.5, 0.02, -1,
+				buy_line);
             std::ostringstream oss2;
             oss2 << "[SIM] SELL OPEN: date=" << bar.date_str
                  << ", price=" << bar.close
@@ -747,6 +745,7 @@ void dual_thrust_trading_strategy::simulation_interactive()
 // fixed_value      固定点数
 // ratio_value      固定比例（如0.02表示2%）
 // direction        1=多头，-1=空头
+// safe_tp		    某些情况下算不出止盈点时的安全止盈点
 // 返回止盈价位
 double dual_thrust_trading_strategy::calc_take_profit(
     double entry_price,
@@ -755,7 +754,8 @@ double dual_thrust_trading_strategy::calc_take_profit(
     double trailing_extreme,
     double fixed_value,
     double ratio_value,
-    int direction)
+    int direction,
+    double safe_tp)
 {
 
 
@@ -767,16 +767,7 @@ double dual_thrust_trading_strategy::calc_take_profit(
         // 固定比例止盈：多头=开仓价*(1+比例)，空头=开仓价*(1-比例)
         return entry_price * (1.0 + direction * ratio_value);
     case TakeProfitType::Volatility: {
-        // 使用atr移动止损算法计算止盈点
-        constexpr int atr_period = 15;
-        double atr_mult = 2; // 可根据实际策略调整
-        std::deque<DTBarData> atr_bars(_bar_history.end() - atr_period, _bar_history.end());
-        double new_tp = calc_atr_trailing_stop(atr_bars, atr_period, atr_mult, entry_price, direction, trailing_extreme);
-        if (new_tp == -999.99) {
-            // 计算失败时，返回当前价格作为止盈点，避免无效值
-            return trailing_extreme;
-        }
-        return new_tp;
+		return safe_tp; // 该类型在on_bar中动态计算,此处直接返回当前止盈点
     }
     case TakeProfitType::Trailing:
         // 移动止损转止盈：多头=trailing_max-回撤，空头=trailing_min+回撤
