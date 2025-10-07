@@ -115,6 +115,8 @@ private:
 	double _sim_win_rate = 0.0;               // 仿真胜率
 	double _sim_profit_loss_rate = 0.0;        // 仿真盈亏比
 	int _sim_trades = 0;                     // 仿真总交易次数
+    int _win_count = 0;
+    double _total_win = 0.0, _total_loss = 0.0;
 
     TakeProfitType _take_profit_type = TakeProfitType::Volatility; // 止盈类型
 

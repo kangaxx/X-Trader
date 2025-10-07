@@ -382,16 +382,14 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
                 _sim_pos.profit += profit;
                 // 统计胜率、盈亏比、交易次数
                 _sim_trades++;
-                static int win_count = 0;
-                static double total_win = 0.0, total_loss = 0.0;
                 if (profit > 0) {
-                    win_count++;
-                    total_win += profit;
+                    _win_count++;
+                    _total_win += profit;
                 } else {
-                    total_loss += -profit;
+                    _total_loss += -profit;
                 }
-                _sim_win_rate = _sim_trades > 0 ? static_cast<double>(win_count) / _sim_trades : 0.0;
-                _sim_profit_loss_rate = total_loss > 0 ? total_win / total_loss : 0.0;
+                _sim_win_rate = _sim_trades > 0 ? static_cast<double>(_win_count) / _sim_trades : 0.0;
+                _sim_profit_loss_rate = _total_loss > 0 ? _total_win / _total_loss : 0.0;
 
                 std::ostringstream oss2;
                 oss2 << "[SIM] CLOSE SHORT: date=" << bar.date_str
@@ -470,19 +468,48 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
  */
 void dual_thrust_trading_strategy::force_close_sim(const DTBarData& bar) {
     double profit = 0.0;
+
     if (_sim_pos.long_pos > 0) {
         profit = (bar.close - _sim_pos.long_entry) * _sim_pos.long_pos;
         _sim_pos.profit += profit;
+        _sim_trades++;
+        if (profit > 0) {
+            _win_count++;
+            _total_win += profit;
+        } else {
+            _total_loss += -profit;
+        }
+        _sim_win_rate = _sim_trades > 0 ? static_cast<double>(_win_count) / _sim_trades : 0.0;
+        _sim_profit_loss_rate = _total_loss > 0 ? _total_win / _total_loss : 0.0;
+
         std::ostringstream oss;
-        oss << "DualThrust SIM force close long, price=" << bar.close << ", profit=" << profit;
+        oss << "DualThrust SIM force close long, price=" << bar.close
+            << ", profit=" << profit
+            << ", sim_win_rate=" << _sim_win_rate
+            << ", sim_profit_loss_rate=" << _sim_profit_loss_rate
+            << ", sim_trades=" << _sim_trades;
         Logger::get_instance().info(oss.str());
         _sim_pos.long_pos = 0;
     }
     if (_sim_pos.short_pos > 0) {
         profit = (_sim_pos.short_entry - bar.close) * _sim_pos.short_pos;
         _sim_pos.profit += profit;
+        _sim_trades++;
+        if (profit > 0) {
+            _win_count++;
+            _total_win += profit;
+        } else {
+            _total_loss += -profit;
+        }
+        _sim_win_rate = _sim_trades > 0 ? static_cast<double>(_win_count) / _sim_trades : 0.0;
+        _sim_profit_loss_rate = _total_loss > 0 ? _total_win / _total_loss : 0.0;
+
         std::ostringstream oss;
-        oss << "DualThrust SIM force close short, price=" << bar.close << ", profit=" << profit;
+        oss << "DualThrust SIM force close short, price=" << bar.close
+            << ", profit=" << profit
+            << ", sim_win_rate=" << _sim_win_rate
+            << ", sim_profit_loss_rate=" << _sim_profit_loss_rate
+            << ", sim_trades=" << _sim_trades;
         Logger::get_instance().info(oss.str());
         _sim_pos.short_pos = 0;
     }
@@ -768,14 +795,20 @@ double dual_thrust_trading_strategy::calc_atr_trailing_stop(
 
     // 计算ATR
     double atr_sum = 0.0;
+    std::ostringstream oss;
+    oss << "[ATR_TRAILING_STOP] atr_period=" << atr_period << ", atr_mult=" << atr_mult
+        << ", entry_price=" << entry_price << ", direction=" << direction
+        << ", cur_take_profit=" << cur_take_profit << "\n";
     for (size_t i = 1; i < bars.size(); ++i) {
         double high = bars[i].high;
         double low = bars[i].low;
         double prev_close = bars[i - 1].close;
         double tr = std::max({ high - low, std::abs(high - prev_close), std::abs(low - prev_close) });
         atr_sum += tr;
+        oss << "  bar[" << i << "]: high=" << high << ", low=" << low << ", prev_close=" << prev_close << ", tr=" << tr << "\n";
     }
     double atr = atr_sum / (atr_period - 1);
+    oss << "  ATR=" << atr << "\n";
 
     // 计算持仓期间极值
     double trailing_extreme = entry_price;
@@ -786,16 +819,18 @@ double dual_thrust_trading_strategy::calc_atr_trailing_stop(
             trailing_extreme = std::min(trailing_extreme, bars[i].low);
         }
     }
+    oss << "  trailing_extreme=" << trailing_extreme << "\n";
 
     double new_tp = direction == 1
         ? trailing_extreme - atr_mult * atr
         : trailing_extreme + atr_mult * atr;
+    oss << "  new_tp(before limit)=" << new_tp << "\n";
 
     // 多头止盈点只允许上升，空头止盈点只允许下降
-    if (cur_take_profit == 0.0) return new_tp;
-    if (direction == 1) {
-        return std::max(cur_take_profit, new_tp);
-    } else {
-        return std::min(cur_take_profit, new_tp);
-    }
+    double final_tp = cur_take_profit == 0.0 ? new_tp :
+        (direction == 1 ? std::max(cur_take_profit, new_tp) : std::min(cur_take_profit, new_tp));
+    oss << "  final_tp=" << final_tp;
+
+    Logger::get_instance().debug(oss.str());
+    return final_tp;
 }
