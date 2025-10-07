@@ -122,7 +122,8 @@ private:
 
     // 计算止盈数值
     // direction: 1=多头，-1=空头
-    double calc_take_profit(double entry_price, double volatility, double current_price, double trailing_extreme, double fixed_value, double ratio_value, int direction);
+    double calc_take_profit(double entry_price, double volatility, double current_price, double trailing_extreme, double fixed_value, double ratio_value, int direction,
+        double safe_tp);
 
     // 从基准区间计算波动率
     double calc_range_from_base_bars(const std::vector<DTBarData>& bars);
