@@ -742,7 +742,7 @@ void dual_thrust_trading_strategy::simulation_interactive()
 // entry_price      开仓价
 // volatility       波动率（如ATR等）
 // current_price    当前价格
-// trailing_extreme 持仓期间最高价（多头）或最低价（空头）
+// trailing_extreme 持仓期间最高价（多头）或最低价（空头）（atr移动止损模式下则是当前止损点)
 // fixed_value      固定点数
 // ratio_value      固定比例（如0.02表示2%）
 // direction        1=多头，-1=空头
@@ -756,6 +756,13 @@ double dual_thrust_trading_strategy::calc_take_profit(
     double ratio_value,
     int direction)
 {
+	//atr移动止损需要的K线数据及其他参数
+    //begin
+    constexpr int atr_period = 15;
+    double atr_mult = 2; // 可根据实际策略调整
+    std::deque<DTBarData> atr_bars(_bar_history.end() - atr_period, _bar_history.end());
+    //end
+
     switch (_take_profit_type) {
     case TakeProfitType::FixedPoint:
         // 固定点数止盈：多头=开仓价+点数，空头=开仓价-点数
@@ -764,8 +771,13 @@ double dual_thrust_trading_strategy::calc_take_profit(
         // 固定比例止盈：多头=开仓价*(1+比例)，空头=开仓价*(1-比例)
         return entry_price * (1.0 + direction * ratio_value);
     case TakeProfitType::Volatility:
-        // 波动率止盈：多头=开仓价+N*volatility，空头=开仓价-N*volatility
-        return entry_price + direction * fixed_value * volatility;
+		// 使用atr移动止损算法计算止盈点
+		double new_tp = calc_atr_trailing_stop(atr_bars, atr_period, atr_mult, entry_price, direction, trailing_extreme);
+        if (new_tp == -999.99) {
+            // 计算失败时，返回当前价格作为止盈点，避免无效值
+            return trailing_extreme;
+		}
+        return new_tp;
     case TakeProfitType::Trailing:
         // 移动止损转止盈：多头=trailing_max-回撤，空头=trailing_min+回撤
         return trailing_extreme - direction * fixed_value;
