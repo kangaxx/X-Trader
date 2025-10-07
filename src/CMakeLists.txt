@@ -19,6 +19,7 @@ set(CMAKE_CXX_FLAGS_RELEASE"-O2")
 set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH}
     "${PROJECT_SOURCE_DIR}/include"
     "${PROJECT_SOURCE_DIR}/include/spdlog"
+    "${PROJECT_SOURCE_DIR}/common"
     "${PROJECT_SOURCE_DIR}/utils")
 
 
