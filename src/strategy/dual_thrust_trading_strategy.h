@@ -112,6 +112,9 @@ private:
     std::set<orderref_t> _buy_open_orders, _sell_open_orders; // 买开/卖开挂单引用
     bool _is_closing = false;                // 是否收盘强平标志
 	double _range;                           // 价格区间
+	double _sim_win_rate = 0.0;               // 仿真胜率
+	double _sim_profit_loss_rate = 0.0;        // 仿真盈亏比
+	int _sim_trades = 0;                     // 仿真总交易次数
 
     TakeProfitType _take_profit_type = TakeProfitType::Volatility; // 止盈类型
 
