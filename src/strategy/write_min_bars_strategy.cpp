@@ -1,4 +1,4 @@
-#include "strategy_demo.h"
+#include "write_min_bars_strategy.h"
 #include "frame.h"
 
 
