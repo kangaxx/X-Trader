@@ -158,7 +158,7 @@ void dual_thrust_trading_strategy::on_cancel(const Order& order)
 
     std::ostringstream oss;
     oss << "DualThrust order canceled: "
-        << "time=" << order.cancel_time
+        << "time="<< order.cancel_time
         << ", price=" << order.limit_price
         << ", dir=" << dir_str
         << ", volume=" << order.volume_total_original
@@ -171,7 +171,7 @@ void dual_thrust_trading_strategy::on_error(const Order& order)
 {
     std::ostringstream oss;
     oss << "DualThrust order error: "
-        << "time=" << order.insert_time
+        << "time="<< order.insert_time
         << ", price=" << order.limit_price
         << ", volume=" << order.volume_total_original
         << ", error_id=" << order.error_id
@@ -192,14 +192,12 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
 
     // 提取bar的时分
     std::string bar_time = (bar.date_str.size() >= 16) ? bar.date_str.substr(11, 5) : "";
-    // _end_time格式为"HH:MM"
     bool is_after_end_time = (!bar_time.empty() && bar_time >= _end_time);
 
     if (_today_bar.date_str.empty() || bar_day == today_day) {
-        // 同一天，合并到_today_bar
         if (_today_bar.date_str.empty()) {
             _today_bar = bar;
-            _today_bar.date_str = bar_day; // 只保留日期部分
+            _today_bar.date_str = bar_day;
         } else {
             _today_bar.high = std::max(_today_bar.high, bar.high);
             _today_bar.low = std::min(_today_bar.low, bar.low);
@@ -208,31 +206,27 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
             _today_bar.datetime = bar.datetime;
         }
     } else {
-        // 日期变更，先将上一天的_today_bar加入_base_bars
         if (_base_bars.size() >= static_cast<size_t>(_base_days)) {
             _base_bars.erase(_base_bars.begin());
         }
         _base_bars.push_back(_today_bar);
-        // 用新_base_bars数据计算range
         if (_base_bars.size() < static_cast<size_t>(_n)) {
             Logger::get_instance().error("DualThrust: not enough base bars to calculate range");
             _range = 0.0;
             return;
         }
         _range = calc_range_from_base_bars(_base_bars);
-        // 新的一天，重置_today_bar
         _today_bar = bar;
         _today_bar.date_str = bar_day;
     }
 
-    // 如果到达或超过收盘时间，停止开单并强制平仓
     if (is_after_end_time) {
         force_close_sim(bar);
         return;
     }
 
     _bar_history.push_back(bar);
-    if (_bar_history.size() > _n + 1) _bar_history.pop_front();
+    if (_bar_history.size() > 16) _bar_history.pop_front(); // 保证历史长度足够计算ATR
 
     std::deque<DTBarData> ref_bars;
     if (_is_sim && _bar_cursor <= 1) {
@@ -250,6 +244,28 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
 
     // 仿真模式下详细日志，便于调试
     if (_is_sim) {
+        // 止盈类型为波动率止损时，持仓单动态更新止盈点
+        if (_take_profit_type == TakeProfitType::Volatility) {
+            constexpr int atr_period = 15;
+            double atr_mult = 2; // 可根据实际策略调整
+            // 多头持仓止盈点更新
+            if (_sim_pos.long_pos > 0 && _bar_history.size() >= atr_period) {
+                std::deque<DTBarData> atr_bars(_bar_history.end() - atr_period, _bar_history.end());
+                double new_tp = calc_atr_trailing_stop(atr_bars, atr_period, atr_mult, _sim_pos.long_entry, 1, _sim_pos.long_take_profit);
+                if (new_tp > _sim_pos.long_take_profit || _sim_pos.long_take_profit == 0.0) {
+                    _sim_pos.long_take_profit = new_tp;
+                }
+            }
+            // 空头持仓止盈点更新
+            if (_sim_pos.short_pos > 0 && _bar_history.size() >= atr_period) {
+                std::deque<DTBarData> atr_bars(_bar_history.end() - atr_period, _bar_history.end());
+                double new_tp = calc_atr_trailing_stop(atr_bars, atr_period, atr_mult, _sim_pos.short_entry, -1, _sim_pos.short_take_profit);
+                if (new_tp < _sim_pos.short_take_profit || _sim_pos.short_take_profit == 0.0) {
+                    _sim_pos.short_take_profit = new_tp;
+                }
+            }
+        }
+
         std::ostringstream oss_bar_info;
         oss_bar_info << "[SIM] Bar: date=" << bar.date_str
             << ", open=" << bar.open
@@ -264,7 +280,9 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
             << ", sell_line=" << sell_line
             << ", long_pos=" << _sim_pos.long_pos
             << ", short_pos=" << _sim_pos.short_pos
-            << ", profit=" << _sim_pos.profit;
+            << ", profit=" << _sim_pos.profit
+            << ", long_tp=" << _sim_pos.long_take_profit
+            << ", short_tp=" << _sim_pos.short_take_profit;
         Logger::get_instance().debug(oss_bar_info.str());
 
         // 多头开仓
@@ -662,5 +680,58 @@ double dual_thrust_trading_strategy::calc_take_profit(
         return trailing_extreme - direction * fixed_value;
     default:
         return 0.0;
+    }
+}
+
+// ATR移动止损算法（带止盈点回撤限制）
+// 参数说明：
+// bars         - 输入的K线数据（长度必须等于atr_period）
+// atr_period   - ATR计算周期
+// atr_mult     - ATR乘数（回撤距离）
+// entry_price  - 开仓价
+// direction    - 1=多头，-1=空头
+// cur_take_profit - 当前止盈点数
+// 返回：新的止盈点（多头只允许上升，空头只允许下降）
+double dual_thrust_trading_strategy::calc_atr_trailing_stop(
+    const std::deque<DTBarData>& bars,
+    int atr_period,
+    double atr_mult,
+    double entry_price,
+    int direction,
+    double cur_take_profit)
+{
+    if (bars.size() != static_cast<size_t>(atr_period) || bars.size() < 2) return -999.99;
+
+    // 计算ATR
+    double atr_sum = 0.0;
+    for (size_t i = 1; i < bars.size(); ++i) {
+        double high = bars[i].high;
+        double low = bars[i].low;
+        double prev_close = bars[i - 1].close;
+        double tr = std::max({ high - low, std::abs(high - prev_close), std::abs(low - prev_close) });
+        atr_sum += tr;
+    }
+    double atr = atr_sum / (atr_period - 1);
+
+    // 计算持仓期间极值
+    double trailing_extreme = entry_price;
+    for (size_t i = 0; i < bars.size(); ++i) {
+        if (direction == 1) { // 多头
+            trailing_extreme = std::max(trailing_extreme, bars[i].high);
+        } else { // 空头
+            trailing_extreme = std::min(trailing_extreme, bars[i].low);
+        }
+    }
+
+    double new_tp = direction == 1
+        ? trailing_extreme - atr_mult * atr
+        : trailing_extreme + atr_mult * atr;
+
+    // 多头止盈点只允许上升，空头止盈点只允许下降
+    if (cur_take_profit == 0.0) return new_tp;
+    if (direction == 1) {
+        return std::max(cur_take_profit, new_tp);
+    } else {
+        return std::min(cur_take_profit, new_tp);
     }
 }

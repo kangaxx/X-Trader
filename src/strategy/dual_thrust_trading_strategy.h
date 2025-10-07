@@ -113,7 +113,7 @@ private:
     bool _is_closing = false;                // 是否收盘强平标志
 	double _range;                           // 价格区间
 
-    TakeProfitType _take_profit_type = TakeProfitType::FixedPoint; // 止盈类型
+    TakeProfitType _take_profit_type = TakeProfitType::Volatility; // 止盈类型
 
     // 计算止盈数值
     // direction: 1=多头，-1=空头
@@ -121,4 +121,7 @@ private:
 
     // 从基准区间计算波动率
     double calc_range_from_base_bars(const std::vector<DTBarData>& bars);
+	// ATR移动止损算法
+    double calc_atr_trailing_stop(const std::deque<DTBarData>& bars, int atr_period, double atr_mult,
+        double entry_price, int direction, double cur_take_profit);
 };
