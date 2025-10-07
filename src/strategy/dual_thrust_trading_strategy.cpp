@@ -431,7 +431,6 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
                 _sim_pos.short_pos = 0;
             }
         }
-        Logger::get_instance().debug("2"); //temp
     } else {
         // 实盘模式下开平仓逻辑
         const auto& posi = get_position(_contract);
