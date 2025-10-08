@@ -251,7 +251,7 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
             if (_sim_pos.long_pos > 0 && _bar_history.size() >= atr_period) {
                 std::deque<DTBarData> atr_bars(_bar_history.end() - atr_period, _bar_history.end());
                 double new_tp = calc_atr_trailing_stop(atr_bars, atr_period, atr_mult, _sim_pos.long_entry, 1, _sim_pos.long_take_profit);
-                if (new_tp > _sim_pos.long_take_profit 
+                if ((new_tp > _sim_pos.long_take_profit && _sim_pos.long_take_profit != -999.9)
                     || (new_tp > _sim_pos.long_entry &&_sim_pos.long_take_profit == -999.9)) {
                     _sim_pos.long_take_profit = new_tp;
                 }
@@ -260,7 +260,7 @@ void dual_thrust_trading_strategy::on_bar(const DTBarData& bar) {
             if (_sim_pos.short_pos > 0 && _bar_history.size() >= atr_period) {
                 std::deque<DTBarData> atr_bars(_bar_history.end() - atr_period, _bar_history.end());
                 double new_tp = calc_atr_trailing_stop(atr_bars, atr_period, atr_mult, _sim_pos.short_entry, -1, _sim_pos.short_take_profit);
-                if (new_tp < _sim_pos.short_take_profit 
+                if ((new_tp < _sim_pos.short_take_profit && _sim_pos.short_take_profit != -999.9)
                     || (new_tp < _sim_pos.short_entry && _sim_pos.short_take_profit == -999.9)) {
                     _sim_pos.short_take_profit = new_tp;
                 }
