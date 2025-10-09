@@ -2,6 +2,7 @@
 .vs
 src/framework/CMakeFiles/
 CMakeFiles/
+CMakefiles/
 Makefile
 demo
 bin/
