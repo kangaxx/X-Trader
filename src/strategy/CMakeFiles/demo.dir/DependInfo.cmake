@@ -22,6 +22,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/root/X-Trader/src/strategy/simp_turtle_trading_strategy.cpp" "strategy/CMakeFiles/demo.dir/simp_turtle_trading_strategy.cpp.o" "gcc" "strategy/CMakeFiles/demo.dir/simp_turtle_trading_strategy.cpp.o.d"
   "/root/X-Trader/src/strategy/statistical_arbitrage.cpp" "strategy/CMakeFiles/demo.dir/statistical_arbitrage.cpp.o" "gcc" "strategy/CMakeFiles/demo.dir/statistical_arbitrage.cpp.o.d"
   "/root/X-Trader/src/strategy/strategy_demo.cpp" "strategy/CMakeFiles/demo.dir/strategy_demo.cpp.o" "gcc" "strategy/CMakeFiles/demo.dir/strategy_demo.cpp.o.d"
+  "/root/X-Trader/src/strategy/write_min_bars_strategy.cpp" "strategy/CMakeFiles/demo.dir/write_min_bars_strategy.cpp.o" "gcc" "strategy/CMakeFiles/demo.dir/write_min_bars_strategy.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

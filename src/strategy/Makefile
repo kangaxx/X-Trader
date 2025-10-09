@@ -466,6 +466,30 @@ strategy_demo.cpp.s:
 	cd /root/X-Trader/src && $(MAKE) $(MAKESILENT) -f strategy/CMakeFiles/demo.dir/build.make strategy/CMakeFiles/demo.dir/strategy_demo.cpp.s
 .PHONY : strategy_demo.cpp.s
 
+write_min_bars_strategy.o: write_min_bars_strategy.cpp.o
+.PHONY : write_min_bars_strategy.o
+
+# target to build an object file
+write_min_bars_strategy.cpp.o:
+	cd /root/X-Trader/src && $(MAKE) $(MAKESILENT) -f strategy/CMakeFiles/demo.dir/build.make strategy/CMakeFiles/demo.dir/write_min_bars_strategy.cpp.o
+.PHONY : write_min_bars_strategy.cpp.o
+
+write_min_bars_strategy.i: write_min_bars_strategy.cpp.i
+.PHONY : write_min_bars_strategy.i
+
+# target to preprocess a source file
+write_min_bars_strategy.cpp.i:
+	cd /root/X-Trader/src && $(MAKE) $(MAKESILENT) -f strategy/CMakeFiles/demo.dir/build.make strategy/CMakeFiles/demo.dir/write_min_bars_strategy.cpp.i
+.PHONY : write_min_bars_strategy.cpp.i
+
+write_min_bars_strategy.s: write_min_bars_strategy.cpp.s
+.PHONY : write_min_bars_strategy.s
+
+# target to generate assembly for a file
+write_min_bars_strategy.cpp.s:
+	cd /root/X-Trader/src && $(MAKE) $(MAKESILENT) -f strategy/CMakeFiles/demo.dir/build.make strategy/CMakeFiles/demo.dir/write_min_bars_strategy.cpp.s
+.PHONY : write_min_bars_strategy.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -517,6 +541,9 @@ help:
 	@echo "... strategy_demo.o"
 	@echo "... strategy_demo.i"
 	@echo "... strategy_demo.s"
+	@echo "... write_min_bars_strategy.o"
+	@echo "... write_min_bars_strategy.i"
+	@echo "... write_min_bars_strategy.s"
 .PHONY : help
 
 

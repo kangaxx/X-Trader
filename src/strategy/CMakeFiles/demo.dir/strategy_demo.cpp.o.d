@@ -239,4 +239,110 @@ strategy/CMakeFiles/demo.dir/strategy_demo.cpp.o: \
  /root/X-Trader/src/utils/event_center.hpp \
  /root/X-Trader/src/utils/ringbuffer.hpp \
  /root/X-Trader/src/utils/trader_api.h \
- /root/X-Trader/src/include/resample.h
+ /root/X-Trader/src/include/resample.h \
+ /root/X-Trader/src/strategy/Logger.h /usr/include/c++/13/memory \
+ /usr/include/c++/13/bits/stl_raw_storage_iter.h \
+ /usr/include/c++/13/bits/shared_ptr_atomic.h \
+ /usr/include/c++/13/backward/auto_ptr.h \
+ /usr/include/c++/13/bits/ranges_uninitialized.h \
+ /usr/include/c++/13/bits/ranges_algobase.h \
+ /usr/include/c++/13/pstl/glue_memory_defs.h \
+ /usr/include/c++/13/pstl/execution_defs.h \
+ /root/X-Trader/src/include/spdlog/spdlog.h \
+ /root/X-Trader/src/include/spdlog/common.h \
+ /root/X-Trader/src/include/spdlog/details/null_mutex.h \
+ /usr/include/c++/13/utility /usr/include/c++/13/bits/stl_relops.h \
+ /root/X-Trader/src/include/spdlog/tweakme.h /usr/include/c++/13/chrono \
+ /usr/include/c++/13/bits/chrono_io.h /usr/include/c++/13/format \
+ /usr/include/c++/13/charconv /usr/include/c++/13/optional \
+ /usr/include/c++/13/span /usr/include/c++/13/variant \
+ /root/X-Trader/src/include/spdlog/fmt/fmt.h \
+ /root/X-Trader/src/include/spdlog/fmt/bundled/format.h \
+ /root/X-Trader/src/include/spdlog/fmt/bundled/base.h \
+ /root/X-Trader/src/include/spdlog/fmt/bundled/format.h \
+ /usr/include/c++/13/cmath /usr/include/math.h \
+ /usr/include/x86_64-linux-gnu/bits/math-vector.h \
+ /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
+ /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
+ /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
+ /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
+ /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
+ /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
+ /usr/include/x86_64-linux-gnu/bits/mathcalls-narrow.h \
+ /usr/include/x86_64-linux-gnu/bits/iscanonical.h \
+ /usr/include/c++/13/bits/specfun.h /usr/include/c++/13/tr1/gamma.tcc \
+ /usr/include/c++/13/tr1/special_function_util.h \
+ /usr/include/c++/13/tr1/bessel_function.tcc \
+ /usr/include/c++/13/tr1/beta_function.tcc \
+ /usr/include/c++/13/tr1/ell_integral.tcc \
+ /usr/include/c++/13/tr1/exp_integral.tcc \
+ /usr/include/c++/13/tr1/hypergeometric.tcc \
+ /usr/include/c++/13/tr1/legendre_function.tcc \
+ /usr/include/c++/13/tr1/modified_bessel_func.tcc \
+ /usr/include/c++/13/tr1/poly_hermite.tcc \
+ /usr/include/c++/13/tr1/poly_laguerre.tcc \
+ /usr/include/c++/13/tr1/riemann_zeta.tcc /usr/include/c++/13/cstring \
+ /root/X-Trader/src/include/spdlog/fmt/bundled/format-inl.h \
+ /usr/include/c++/13/algorithm /usr/include/c++/13/bits/ranges_algo.h \
+ /usr/include/c++/13/pstl/glue_algorithm_defs.h \
+ /root/X-Trader/src/include/spdlog/common-inl.h \
+ /usr/include/c++/13/iterator /usr/include/c++/13/bits/stream_iterator.h \
+ /root/X-Trader/src/include/spdlog/details/registry.h \
+ /root/X-Trader/src/include/spdlog/details/periodic_worker.h \
+ /usr/include/c++/13/condition_variable \
+ /usr/include/c++/13/bits/unique_lock.h /usr/include/c++/13/mutex \
+ /root/X-Trader/src/include/spdlog/details/periodic_worker-inl.h \
+ /root/X-Trader/src/include/spdlog/details/registry-inl.h \
+ /root/X-Trader/src/include/spdlog/logger.h \
+ /root/X-Trader/src/include/spdlog/details/backtracer.h \
+ /root/X-Trader/src/include/spdlog/details/circular_q.h \
+ /usr/include/c++/13/cassert /usr/include/assert.h \
+ /root/X-Trader/src/include/spdlog/details/log_msg_buffer.h \
+ /root/X-Trader/src/include/spdlog/details/log_msg.h \
+ /root/X-Trader/src/include/spdlog/details/log_msg-inl.h \
+ /root/X-Trader/src/include/spdlog/details/os.h \
+ /root/X-Trader/src/include/spdlog/details/os-inl.h \
+ /usr/include/x86_64-linux-gnu/sys/stat.h \
+ /usr/include/x86_64-linux-gnu/bits/stat.h \
+ /usr/include/x86_64-linux-gnu/bits/struct_stat.h \
+ /usr/include/x86_64-linux-gnu/bits/statx.h /usr/include/linux/stat.h \
+ /usr/include/linux/types.h /usr/include/x86_64-linux-gnu/asm/types.h \
+ /usr/include/asm-generic/types.h /usr/include/asm-generic/int-ll64.h \
+ /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
+ /usr/include/asm-generic/bitsperlong.h /usr/include/linux/posix_types.h \
+ /usr/include/linux/stddef.h \
+ /usr/include/x86_64-linux-gnu/asm/posix_types.h \
+ /usr/include/x86_64-linux-gnu/asm/posix_types_64.h \
+ /usr/include/asm-generic/posix_types.h \
+ /usr/include/x86_64-linux-gnu/bits/statx-generic.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_statx_timestamp.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_statx.h \
+ /usr/include/fcntl.h /usr/include/x86_64-linux-gnu/bits/fcntl.h \
+ /usr/include/x86_64-linux-gnu/bits/fcntl-linux.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h \
+ /usr/include/linux/falloc.h \
+ /root/X-Trader/src/include/spdlog/details/log_msg_buffer-inl.h \
+ /root/X-Trader/src/include/spdlog/details/backtracer-inl.h \
+ /root/X-Trader/src/include/spdlog/logger-inl.h \
+ /root/X-Trader/src/include/spdlog/pattern_formatter.h \
+ /root/X-Trader/src/include/spdlog/formatter.h \
+ /root/X-Trader/src/include/spdlog/pattern_formatter-inl.h \
+ /root/X-Trader/src/include/spdlog/details/fmt_helper.h \
+ /root/X-Trader/src/include/spdlog/mdc.h \
+ /root/X-Trader/src/include/spdlog/sinks/sink.h \
+ /root/X-Trader/src/include/spdlog/sinks/sink-inl.h \
+ /root/X-Trader/src/include/spdlog/sinks/ansicolor_sink.h \
+ /root/X-Trader/src/include/spdlog/details/console_globals.h \
+ /root/X-Trader/src/include/spdlog/sinks/ansicolor_sink-inl.h \
+ /root/X-Trader/src/include/spdlog/details/synchronous_factory.h \
+ /root/X-Trader/src/include/spdlog/version.h \
+ /root/X-Trader/src/include/spdlog/spdlog-inl.h \
+ /root/X-Trader/src/include/spdlog/sinks/daily_file_sink.h \
+ /root/X-Trader/src/include/spdlog/details/file_helper.h \
+ /root/X-Trader/src/include/spdlog/details/file_helper-inl.h \
+ /root/X-Trader/src/include/spdlog/fmt/chrono.h \
+ /root/X-Trader/src/include/spdlog/fmt/bundled/chrono.h \
+ /root/X-Trader/src/include/spdlog/sinks/base_sink.h \
+ /root/X-Trader/src/include/spdlog/sinks/base_sink-inl.h \
+ /root/X-Trader/src/include/spdlog/sinks/stdout_color_sinks.h \
+ /root/X-Trader/src/include/spdlog/sinks/stdout_color_sinks-inl.h

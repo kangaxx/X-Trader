@@ -1,3 +1,10 @@
 /.vs
 .vs
+src/framework/CMakeFiles/
+CMakeFiles/
+Makefile
+demo
+bin/
+CMakeCache.txt
 x64-Debug
+*.so

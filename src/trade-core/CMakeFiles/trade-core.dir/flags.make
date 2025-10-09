@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/root/X-Trader/src/include -I/root/X-Trader/src/include/spdlog -I/root/X-Trader/src/utils -I/root/X-Trader/src/../api/ctp/v6.7.2/linux64
+CXX_INCLUDES = -I/root/X-Trader/src/include -I/root/X-Trader/src/include/spdlog -I/root/X-Trader/src/common -I/root/X-Trader/src/utils -I/root/X-Trader/src/../api/ctp/v6.7.2/linux64
 
 CXX_FLAGS = -std=gnu++20 -fPIC
 
