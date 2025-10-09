@@ -37,7 +37,7 @@ void start_running(const char* filename)
 	}
 	frame run(filename);
 	std::vector<std::shared_ptr<strategy>> strategys;
-	//strategys.emplace_back(std::make_shared<market_making>(1, run, "rb2409", 2, 10, 1));
+    //strategys.emplace_back(std::make_shared<market_making>(1, run, "rb2409", 2, 10, 1));
 	//strategys.emplace_back(std::make_shared<market_making>(1, run, "MA505", 2, 5, 1));
 	//strategys.emplace_back(std::make_shared<statistical_arbitrage>(2, run, "MA501", "MA505", 30, 1));
 	//strategys.emplace_back(std::make_shared<order_flow>(3, run, "MA505", 1, 3, 3, 4, 1));
@@ -50,7 +50,6 @@ void start_running(const char* filename)
     //strategys.emplace_back(std::make_shared<dual_thrust_trading_strategy>(1, run, "ag2512", 5, 0.3, 0.3, 1, true, "/root/tb_furture_data/AG9999.XSGE.csv", "2013-01-04", 5, "14:59"));
 	run.run_until_close(strategys);
 }
-
 
 int main()
 {
