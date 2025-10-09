@@ -1,2 +1,0 @@
-/usr/bin/ar qc /root/X-Trader/bin/libframework.a CMakeFiles/framework.dir/frame.cpp.o CMakeFiles/framework.dir/realtime.cpp.o CMakeFiles/framework.dir/resample.cpp.o CMakeFiles/framework.dir/strategy.cpp.o
-/usr/bin/ranlib /root/X-Trader/bin/libframework.a
