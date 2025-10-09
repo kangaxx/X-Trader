@@ -1,3 +1,0 @@
-/root/X-Trader/src/strategy/CMakeFiles/demo.dir
-/root/X-Trader/src/strategy/CMakeFiles/edit_cache.dir
-/root/X-Trader/src/strategy/CMakeFiles/rebuild_cache.dir
