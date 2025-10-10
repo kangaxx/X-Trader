@@ -13,7 +13,7 @@
 #include <variant>
 #include <any>
     
-class ATRChannelTradingStrategy : public Strategy {
+class ATRChannelTradingStrategy : public strategy {
 public:
     // 构造函数，初始化策略参数
     // 参数:
@@ -29,10 +29,11 @@ public:
     // 注意事项:
     // - 确保传入的参数合理，例如周期应为正整数，倍数应为正数
     // - 该构造函数仅初始化参数
-    ATRChannelTradingStrategy(const std::string& symbol, int atrPeriod, double atrMultiplier
+    ATRChannelTradingStrategy(stratid_t id, frame& frame, const std::string& symbol, int atrPeriod, double atrMultiplier
         , int shortMAPeriod, int longMAPeriod, bool is_simulation = true)
-        : Strategy(symbol), atrIndicator(atrPeriod), atrMultiplier(atrMultiplier),
-          shortMAIndicator(shortMAPeriod), longMAIndicator(longMAPeriod), _is_simulation(is_simulation) {
+        : strategy(id, frame), _symbol(symbol), atrIndicator(atrPeriod), atrMultiplier(atrMultiplier),
+          shortMAIndicator(shortMAPeriod), longMAIndicator(longMAPeriod), _is_simulation(is_simulation) 
+    {
           std::string _startDate = "20220101"; // 回测起始日期
           std::string _endDate = "20221231";   // 回测结束日期
                                               // 根据is_simulation参数决定是否启用回测功能
@@ -287,6 +288,7 @@ public:
         Logger::getInstance().info("onBar executed trading logic");
     }   
 private:
+	std::string _symbol;
     bool _is_simulation;
     ATRIndicator atrIndicator;
     LongMAIndicator longMAIndicator;
