@@ -18,51 +18,29 @@
 #include <utility>
 #include <type_traits>
 #include <iterator>
-#include <array>
-#include <set>
-#include <list>
-#include <deque>        
-#include <unordered_map>
-#include <unordered_set>
-#include <bitset>
-#include <cstddef>
-#include <cstdint>
-#include <cfloat>
-#include <climits>
-#include <cassert>
-#include <cstring>
-#include <cstdlib>
-#include <ctime>
-#include <cmath>
-#include <cctype>       
-#include <locale>
-#include <codecvt>
-#include <fstream>
-#include <streambuf>
-#include <regex>
 class ATRIndicator {
 public:
-    ATRIndicator(int period) : period_(period) {
-        if (period_ <= 0) {
+    ATRIndicator(int period) : _period(period) {
+        if (_period <= 0) {
             throw std::invalid_argument("Period must be a positive integer.");
         }
     }
     void addDataPoint(double high, double low, double close) {
-        if (!data_points_.empty()) {
-            double prev_close = data_points_.back().close;
+        if (!_data_points.empty()) {
+            double prev_close = _data_points.back().close;
             double tr = std::max({high - low, std::abs(high - prev_close), std::abs(low - prev_close)});
-            true_ranges_.push_back(tr);
+            _true_ranges.push_back(tr);
         }
-        data_points_.push_back({high, low, close});
-        if (true_ranges_.size() >= period_) {
+        _data_points.push_back({high, low, close});
+        if (_true_ranges.size() >= _period) {
             calculateATR();
         }
     }
     double getATR() const {
-        if (atr_values_.empty()) {
+        if (_atr_values.empty()) {
             throw std::runtime_error("Not enough data to calculate ATR.");
         }
-        return atr_values_.back();
+        return _atr_values.back();
     }
 private:
     struct DataPoint {
@@ -70,19 +48,19 @@ private:
         double low;
         double close;
     };
-    int period_;
-    std::vector<DataPoint> data_points_;
-    std::vector<double> true_ranges_;
-    std::vector<double> atr_values_;
+    int _period;
+    std::vector<DataPoint> _data_points;
+    std::vector<double> _true_ranges;
+    std::vector<double> _atr_values;
     void calculateATR() {
-        if (atr_values_.empty()) {
-            double sum_tr = std::accumulate(true_ranges_.end() - period_, true_ranges_.end(), 0.0);
-            atr_values_.push_back(sum_tr / period_);
+        if (_atr_values.empty()) {
+            double sum_tr = std::accumulate(_true_ranges.end() - _period, _true_ranges.end(), 0.0);
+            _atr_values.push_back(sum_tr / _period);
         } else {
-            double prev_atr = atr_values_.back();
-            double current_tr = true_ranges_.back();
-            double current_atr = (prev_atr * (period_ - 1) + current_tr) / period_;
-            atr_values_.push_back(current_atr);
+            double prev_atr = _atr_values.back();
+            double current_tr = _true_ranges.back();
+            double current_atr = (prev_atr * (_period - 1) + current_tr) / _period;
+            _atr_values.push_back(current_atr);
         }
     }
 };

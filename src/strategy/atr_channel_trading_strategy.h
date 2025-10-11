@@ -84,7 +84,7 @@ public:
         }
         _lastPrice = tick.close;    
         onBar(tick); // 调用onBar方法处理交易逻辑   
-        Logger::getInstance().info("onTick called with tick data");
+        Logger::get_instance().info("onTick called with tick data");
     } 
     // 根据传入的实时Tick数据,实现基于atr指标的交易策略，后续代码不要写注释
     // 参数:
@@ -131,7 +131,7 @@ public:
                 placeOrder("BUY", -position, currentPrice); // 平空头仓位
             }
         }
-        Logger::getInstance().info("onBar executed trading logic");
+        Logger::get_instance().info("onBar executed trading logic");
     }   
 private:
 	std::string _symbol;
@@ -146,7 +146,7 @@ private:
     double _sam = 0.0; // 短期移动平均线值
     double atrMultiplier;
     double _lastPrice = 0.0; // 需要在类中维护上一个价格
-    std::vector<double>() _priceData; // 需要在类中维护价格数据
+    std::vector<double> _priceData; // 需要在类中维护价格数据
     int position = 0; // 当前持仓，正数表示多头，负数表示空头
     void placeOrder(const std::string& action, int quantity, double price) {
         // 这里实现下单逻辑，action为"BUY"或"SELL"
