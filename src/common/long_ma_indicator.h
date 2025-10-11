@@ -15,10 +15,9 @@ public:
     int getPeriod() const;
 private:
     int _period;
-    std::vector<double> prices;
-    double sum;
-    int count;
-    double longMA;
+    std::vector<double> _prices;
+    double _sum;
+    double _longMA;
     void calculateLongMA();
     std::vector<double> _dataPoints;
     void clear();

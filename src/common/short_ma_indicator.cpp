@@ -52,13 +52,13 @@ int ShortMAIndicator::getPeriod() const {
 // calculateShortMA函数
 // 这个函数已经在getShortMA中实现
 double ShortMAIndicator::calculateShortMA() const {
-     if (!isReady()) {
-         throw std::runtime_error("Not enough data to calculate Short MA");       
-         }
-         double sum = std::accumulate(_prices.begin(), _prices.end(), 0.0);
-         return sum / _period;
-     }
-     return 0.0; // 如果不够数据，返回0.0
+    if (!isReady()) {
+        throw std::runtime_error("Not enough data to calculate Short MA");       
+        }
+        double sum = std::accumulate(_prices.begin(), _prices.end(), 0.0);
+        return sum / _period;
+    }
+    return 0.0; // 如果不够数据，返回0.0
 }
 
 

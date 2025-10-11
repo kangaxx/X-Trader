@@ -15,7 +15,6 @@ private:
     int _period;
     std::vector<double> _prices;
     double _sum;
-    int _count;
     double _shortMA;
     void calculateShortMA();
     std::vector<double> _dataPoints;

@@ -20,8 +20,8 @@ double LongMAIndicator::getValue() const {
     if (_dataPoints.size() < _period) {
         throw std::runtime_error("Not enough data points to calculate the moving average");
     }
-    double sum = std::accumulate(_dataPoints.end() - _period, _dataPoints.end(), 0.0);
-    return sum / _period;
+    double _sum = std::accumulate(_dataPoints.end() - _period, _dataPoints.end(), 0.0);
+    return _sum / _period;
 }
 bool LongMAIndicator::isReady() const {
     return _dataPoints.size() >= _period;
@@ -51,6 +51,6 @@ double LongMAIndicator::calculateSMA(int period) const {
     if (_dataPoints.size() < period) {
         throw std::runtime_error("Not enough data points to calculate the SMA");
     }
-    double sum = std::accumulate(_dataPoints.end() - period, _dataPoints.end(), 0.0);
-    return sum / period;
+    double _sum = std::accumulate(_dataPoints.end() - period, _dataPoints.end(), 0.0);
+    return _sum / period;
 }
