@@ -1,11 +1,10 @@
+#pragma once
 //创建一个strategy的子类, 该类实现了一个基于ATR指标的交易策略
-#ifndef ATR_CHANNEL_TRADING_STRATEGY_H
-#define ATR_CHANNEL_TRADING_STRATEGY_H
 #include "strategy.h"
 #include "../common/atr_indicator.h"
 #include "../common/long_ma_indicator.h"
 #include "../common/short_ma_indicator.h"
-//#include "../backtest/backtest_engine.h"
+#include "../backtest/backtest_engine.h"
 #include "Logger.h"
 #include <string>
 #include <memory>
@@ -62,158 +61,6 @@ public:
     ~ATRChannelTradingStrategy() override {
         Logger::getInstance().info("ATRChannelTradingStrategy destroyed");
     }
-
-    // 回测引擎
-    class BacktestEngine {
-    public:
-        BacktestEngine(const std::string& symbol, const std::string& startDate, const std::string& endDate)
-            : symbol(symbol), startDate(startDate), endDate(endDate) {}
-        void runBacktest(std::function<void(const TickData&)> onTickCallback) {
-            // 这里实现回测逻辑，读取历史数据并调用onTickCallback
-        }
-        void generateReport(const std::string& filename) {
-            // 这里实现报告生成逻辑
-        }
-    private:
-        std::string symbol;
-        std::string _startDate;
-        std::string _endDate;
-        vector<TickData> historicalData; // 存储历史数据
-                                         //将指定分钟级数据集中指定日期范围内的数据整合成日线数据并存储到dailyData中
-        std::vector<TickData> dailyData; // 存储日线数据
-        // 其他回测相关成员变量
-        // 其他回测相关成员函数
-        void loadHistoricalData() {
-            // 这里实现加载历史数据的逻辑
-            // 回测文件的文件名是期货产品代码前转换为两个大写字母加上9999加一个常量字符串  
-            //  例如，"IF9999_historical_data.csv"  
-            // 读取CSV文件并解析数据
-            // 将数据存储在适当的数据结构中
-            // 确保数据按时间顺序排列
-            if (symbol.length() < 2) {
-                throw std::invalid_argument("Symbol must have at least 2 characters");
-            }
-            if (islower(symbol[0]) || islower(symbol[1])) {
-                // 转换为大写
-                symbol[0] = toupper(symbol[0]);
-                symbol[1] = toupper(symbol[1]);
-            }
-            std::string filename = symbol.substr(0, 2) + "9999.XSGE.csv"; 
-            // 读取CSV文件并解析数据
-            // 将数据存储在适当的数据结构中
-            // 确保数据按时间顺序排列
-            std::cout << "Loading historical data from " << filename << std::endl;
-            historicalData.clear();
-            // 这里添加实际的文件读取和数据解析代码
-            // 例如，使用CSV库读取文件并填充historicalData向量
-            // 确保数据按时间顺序排列
-            ifream file(filename);
-            if (!file.is_open()) {
-                throw std::runtime_error("Failed to open file: " + filename);
-            }
-            std::string line;
-            // 读取文件头
-            std::getline(file, line);
-            while (std::getline(file, line)) {
-                std::istringstream ss(line);
-                std::string token;
-                TickData tick;
-                // 假设CSV文件的列顺序为: date, open, high, low, close, volume, open_interest, symbol
-                std::getline(ss, token, ',');
-                tick.date = token;
-                std::getline(ss, token, ',');
-                tick.open = std::stod(token);
-                std::getline(ss, token, ',');
-                tick.high = std::stod(token);
-                std::getline(ss, token, ',');
-                tick.low = std::stod(token);
-                std::getline(ss, token, ',');
-                tick.close = std::stod(token);
-                std::getline(ss, token, ',');
-                tick.volume = std::stoi(token);
-                std::getline(ss, token, ',');
-                tick.open_interest = std::stoi(token);
-                std::getline(ss, token, ',');
-                tick.symbol = token;
-                //使用Logger::getInstance().info() 函数打印数据日志;
-                Logger::getInstance().info("Loaded tick data: " + tick.date + " tick.open : " + tick.open + " tick.close : " + std::to_string(tick.close));
-                // 过滤日期范围
-                if (tick.date >= startDate && tick.date <= endDate) {
-                    historicalData.push_back(tick); 
-                }
-            }
-            file.close();
-            // 确保数据按时间顺序排列
-            std::sort(historicalData.begin(), historicalData.end(), [](const TickData& a, const TickData& b) {
-                return a.date < b.date;
-            });
-            std::cout << "Loaded " << historicalData.size() << " ticks from " << filename << std::endl;
-        }
-
-        // historicalData成员变量存储了从CSV文件中读取的分钟级数据,其日期字段格式为"YYYY-MM-DD HH:MM:SS"，下面的函数将起始日期与结束日期之间的historicalData数据整合成日线数据并存储到dailyData中
-        void aggregateToDaily(std::string startDate, std::string endDate) {
-            if (historicalData.empty()) {
-                std::cout << "No historical data to aggregate" << std::endl;
-                return;
-            }
-            dailyData.clear();
-            TickData currentDay;
-            std::string currentDate = historicalData[0].date.substr(0, 10); // 提取日期部分"YYYY-MM-DD"
-            if (currentDate < startDate || currentDate > endDate){
-            // 如果第一条数据的日期不在范围内，找到第一个符合条件的日期
-                size_t i = 0;
-                while (i < historicalData.size() && (historicalData[i].date.substr(0, 10) < startDate || historicalData[i].date.substr(0, 10) > endDate)) {
-                    ++i;
-                }
-                if (i == historicalData.size()) {
-                    std::cout << "No data in the specified date range" << std::endl;
-                    return; // 没有符合条件的数据
-                }
-            }
-            currentDate = historicalData[i].date.substr(0, 10);
-            currentDay.date = currentDate;
-            currentDay.open = historicalData[0].open;
-            currentDay.high = historicalData[0].high;
-            currentDay.low = historicalData[0].low;
-            currentDay.close = historicalData[0].close;
-            currentDay.volume = historicalData[0].volume;
-            currentDay.open_interest = historicalData[0].open_interest;
-            currentDay.symbol = historicalData[0].symbol;
-            for (const auto& tick : historicalData) {
-                std::string tickDate = tick.date.substr(0, 10);
-                if (tickDate != currentDate) {
-                    // 新的一天，保存前一天的数据
-                    dailyData.push_back(currentDay);
-                    // 初始化新的一天
-                    currentDate = tickDate;
-                    currentDay.date = currentDate;
-                    currentDay.open = tick.open;
-                    currentDay.high = tick.high;
-                    currentDay.low = tick.low;
-                    currentDay.close = tick.close;
-                    currentDay.volume = tick.volume;
-                    currentDay.open_interest = tick.open_interest;  
-                    currentDay.symbol = tick.symbol;
-                } else {            
-                    // 同一天，更新最高价、最低价和收盘价
-                    if (tick.high > currentDay.high) {
-                        currentDay.high = tick.high;
-                    }
-                    if (tick.low < currentDay.low) {
-                        currentDay.low = tick.low;
-                    }
-                    currentDay.close = tick.close; // 收盘价为最后一个tick的价格
-                    currentDay.volume += tick.volume; // 累加成交量
-                    currentDay.open_interest = tick.open_interest; // 持仓量取最后一个tick的值
-                                                                   // 使用Logger::getInstance().info() 函数打印数据日志;
-                    Logger::getInstance().info("Aggregating tick data to daily: " + tick.date + " tick.open : " + std::to_string(tick.open) + " tick.close : " + std::to_string(tick.close));
-                }
-            }
-            // 保存最后一天的数据
-            dailyData.push_back(currentDay);
-            std::cout << "Aggregated to " << dailyData.size() << " daily bars" << std::endl;
-        }
-    };
 
     // 每个Tick数据到来时调用该方法，交易逻辑写在on_bar方法中,本函数只是维护_priceData和计算均线
     // 参数:
@@ -360,4 +207,3 @@ private:
         double sma = sum / period;  
     }
 };
-#endif // ATR_CHANNEL_TRADING_STRATEGY_H
