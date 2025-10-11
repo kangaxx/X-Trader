@@ -6,6 +6,7 @@
 #include "../common/short_ma_indicator.h"
 #include "../backtest/backtest_engine.h"
 #include "Logger.h"
+#include "
 #include <string>
 #include <memory>
 #include <optional>
@@ -65,7 +66,7 @@ public:
     // 参数:
     // - tick: 当前的Tick数据，包含价格等信息
     // 返回值: 无
-    void onTick(const TickData& tick) override {
+    void onTick(const MarketData& tick) {
         // 价格数据维护
         _priceData.push_back(tick.close); // 假设tick包含收盘价
         if (_priceData.size() > std::max(shortMAIndicator.getPeriod(), longMAIndicator.getPeriod())) {
@@ -75,7 +76,7 @@ public:
         updateShortMA(tick);
         updateLongMA(tick); 
         if (_lastPrice == 0.0) {
-            _lastPrice = tick.close;
+            _lastPrice = tick.close
             return; // 初始化上一个价格
         }
         // 如果价格没有变化，直接返回
@@ -90,9 +91,9 @@ public:
     // 参数:
     // - tick: 当前的Tick数据，包含价格等信息
     // 返回值: 无
-    void updateShortMA(const TickData& tick) {
-        shortMAIndicator.update(tick);
-        shortMA = shortMAIndicator.getValue();
+    void updateShortMA(const MarketData& tick) {
+        shortMAIndicator.addPrice(tick.close);
+        shortMA = shortMAIndicator.getShortMa();
         // 计算ATR通道上轨和下轨
         if (atrIndicator.isReady() && shortMAIndicator.isReady()) {
             double atr = atrIndicator.getValue();
@@ -100,12 +101,12 @@ public:
             lowerChannel = shortMA - atrMultiplier * atr;
         }
     }
-    void updateLongMA(const TickData& tick) {
+    void updateLongMA(const MarketData& tick) {
         longMAIndicator.update(tick);
         longMA = longMAIndicator.getValue();
     }   
 
-    void onBar(const TickData& tick ) override {
+    void onBar(const MarketData& tick ) override {
         // 确保ATR和均线指标已经准备好
         if (!atrIndicator.isReady() || !shortMAIndicator.isReady() || !longMAIndicator.isReady()) {
             return;
@@ -139,12 +140,12 @@ private:
     ATRIndicator atrIndicator;
     LongMAIndicator longMAIndicator;
     ShortMAIndicator shortMAIndicator;
-    double upperChannel = 0.0; // ATR通道上轨
-    double lowerChannel = 0.0; // ATR通道下轨
-    double shortMA = 0.0; // 短期移动平均线
-    double longMA = 0.0; // 长期移动平均线
+    double _upperChannel = 0.0; // ATR通道上轨
+    double _lowerChannel = 0.0; // ATR通道下轨
+    double _shortMA = 0.0; // 短期移动平均线
+    double _longMA = 0.0; // 长期移动平均线
     double _sam = 0.0; // 短期移动平均线值
-    double atrMultiplier;
+    double _atrMultiplier; // ATR通道倍数
     double _lastPrice = 0.0; // 需要在类中维护上一个价格
     std::vector<double> _priceData; // 需要在类中维护价格数据
     int position = 0; // 当前持仓，正数表示多头，负数表示空头
