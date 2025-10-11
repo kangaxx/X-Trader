@@ -48,18 +48,17 @@ public:
               //回测过程中，程序会记录每笔交易的详细信息，包括买入卖出时间、价格、数量等
               //以下是回测代码
                BacktestEngine backtestEngine(symbol, _startDate, _endDate);
-               backtestEngine.runBacktest([this](const TickData& tick) {
+               backtestEngine.runBacktest([this](const MarketData& tick) {
                    this->onTick(tick);
                });
                backtestEngine.generateReport("backtest_report.txt");
           } else {
-              Logger::getInstance().info("Initialized ATRChannelTradingStrategy in live trading mode");
+              Logger::get_instance().info("Initialized ATRChannelTradingStrategy in live trading mode");
           } 
     }
     
     // 析构函数
     ~ATRChannelTradingStrategy() override {
-        Logger::getInstance().info("ATRChannelTradingStrategy destroyed");
     }
 
     // 每个Tick数据到来时调用该方法，交易逻辑写在on_bar方法中,本函数只是维护_priceData和计算均线
