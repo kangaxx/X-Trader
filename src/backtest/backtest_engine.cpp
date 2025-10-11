@@ -3,6 +3,17 @@
 #include <sstream>
 #include <iostream>
 
+//构造函数
+BacktestEngine::BacktestEngine(const std::string& symbol, const std::string& start_date, const std::string& end_date) {
+    // 初始化配置
+    _config["symbol"] = symbol;
+    _config["start_date"] = start_date;
+    _config["end_date"] = end_date;
+    _current_plan.symbol = symbol;
+    _current_plan.start_date = start_date;
+    _current_plan.end_date = end_date;
+}
+
 // 读取配置文件
 bool BacktestEngine::LoadConfig(const std::string& config_path) {
     std::ifstream file(config_path);
@@ -12,7 +23,7 @@ bool BacktestEngine::LoadConfig(const std::string& config_path) {
         std::istringstream ss(line);
         std::string key, value;
         if (std::getline(ss, key, '=') && std::getline(ss, value)) {
-            config_[key] = value;
+            _config[key] = value;
         }
     }
     return true;
@@ -60,6 +71,7 @@ bool BacktestEngine::LoadHistoricalData(const std::string& csv_path, std::vector
         std::getline(ss, token, ','); bar.volume = std::stod(token);
         data.push_back(bar);
     }
+	_is_data_loaded = true;
     return true;
 }
 
@@ -85,8 +97,8 @@ BacktestReport BacktestEngine::RunBacktest(const BacktestPlan& plan, const std::
         md.volume = static_cast<int>(bar.volume);
 
         // 回调策略
-        if (onBarCallback_) {
-            onBarCallback_(md);
+        if (_onBarCallback) {
+            _onBarCallback(md);
         }
 
         // 示例：记录每根K线收盘价

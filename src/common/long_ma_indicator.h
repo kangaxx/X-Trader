@@ -1,7 +1,4 @@
 #pragma once
-
-
-
 #include <string>
 #include <vector>
 class LongMAIndicator {
@@ -18,7 +15,6 @@ private:
     std::vector<double> _prices;
     double _sum;
     double _longMA;
-    void calculateLongMA();
     std::vector<double> _dataPoints;
     void clear();
 };

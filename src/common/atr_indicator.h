@@ -42,6 +42,10 @@ public:
         }
         return _atr_values.back();
     }
+
+    bool isReady() const {
+        return _atr_values.size() >= 1;
+    }
 private:
     struct DataPoint {
         double high;

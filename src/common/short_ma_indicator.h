@@ -16,7 +16,6 @@ private:
     std::vector<double> _prices;
     double _sum;
     double _shortMA;
-    void calculateShortMA();
     std::vector<double> _dataPoints;
     void clear();
 };

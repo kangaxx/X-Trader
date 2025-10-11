@@ -6,7 +6,6 @@
 #include "../common/short_ma_indicator.h"
 #include "../backtest/backtest_engine.h"
 #include "Logger.h"
-#include "
 #include <string>
 #include <memory>
 #include <optional>
@@ -31,7 +30,7 @@ public:
     // - 该构造函数仅初始化参数
     ATRChannelTradingStrategy(stratid_t id, frame& frame, const std::string& symbol, int atrPeriod, double atrMultiplier
         , int shortMAPeriod, int longMAPeriod, bool is_simulation = true)
-        : strategy(id, frame), _symbol(symbol), atrIndicator(atrPeriod), atrMultiplier(atrMultiplier),
+        : strategy(id, frame), _symbol(symbol), atrIndicator(atrPeriod), _atrMultiplier(atrMultiplier),
           shortMAIndicator(shortMAPeriod), longMAIndicator(longMAPeriod), _is_simulation(is_simulation) 
     {
           std::string _startDate = "20220101"; // 回测起始日期
@@ -39,20 +38,12 @@ public:
                                               // 根据is_simulation参数决定是否启用回测功能
           if (_is_simulation) {
               Logger::get_instance().info("Initialized ATRChannelTradingStrategy in simulation mode");
-              //虚拟模式下，程序从历史数据中读取数据，按照指定的起始日期和结束日期进行回测
-              //回测结果可以用来评估策略的有效性和稳定性
-              //回测过程中，程序会模拟真实交易环境，包括手续费、滑点等因素
-              //回测完成后，程序会生成一份详细的报告，包含策略的收益率、最大回撤、夏普比率等指标
-              //
-              //回测结果仅供参考，实际交易中可能会有较大差异
-              //回测代码与实际程序的onTick方法一致，确保策略逻辑的一致性
-              //回测过程中，程序会记录每笔交易的详细信息，包括买入卖出时间、价格、数量等
               //以下是回测代码
-               BacktestEngine backtestEngine(symbol, _startDate, _endDate);
-               backtestEngine.runBacktest([this](const MarketData& tick) {
-                   this->onTick(tick);
-               });
-               backtestEngine.generateReport("backtest_report.txt");
+               BacktestEngine backtestEngine(_symbol, _startDate, _endDate);
+			   //在此通过回测引擎注册on_bar回调函数
+			   backtestEngine.SetOnBarCallback([this](const MarketData& tick) { this->onBar(tick); });
+               
+               //backtestEngine.generateReport("backtest_report.txt");
           } else {
               Logger::get_instance().info("Initialized ATRChannelTradingStrategy in live trading mode");
           } 
@@ -68,7 +59,7 @@ public:
     // 返回值: 无
     void onTick(const MarketData& tick) {
         // 价格数据维护
-        _priceData.push_back(tick.close); // 假设tick包含收盘价
+        _priceData.push_back(tick.last_price); // 假设tick包含收盘价
         if (_priceData.size() > std::max(shortMAIndicator.getPeriod(), longMAIndicator.getPeriod())) {
             _priceData.erase(_priceData.begin()); // 保持价格数据长度不超过最大周期
         } 
@@ -76,14 +67,14 @@ public:
         updateShortMA(tick);
         updateLongMA(tick); 
         if (_lastPrice == 0.0) {
-            _lastPrice = tick.close
+            _lastPrice = tick.last_price;
             return; // 初始化上一个价格
         }
         // 如果价格没有变化，直接返回
-        if (tick.close == _lastPrice) {
+        if (tick.last_price == _lastPrice) {
             return;
         }
-        _lastPrice = tick.close;    
+        _lastPrice = tick.last_price;    
         onBar(tick); // 调用onBar方法处理交易逻辑   
         Logger::get_instance().info("onTick called with tick data");
     } 
@@ -92,44 +83,39 @@ public:
     // - tick: 当前的Tick数据，包含价格等信息
     // 返回值: 无
     void updateShortMA(const MarketData& tick) {
-        shortMAIndicator.addPrice(tick.close);
-        shortMA = shortMAIndicator.getShortMa();
+        shortMAIndicator.addPrice(tick.last_price);
+        _shortMA = shortMAIndicator.getShortMA();
         // 计算ATR通道上轨和下轨
         if (atrIndicator.isReady() && shortMAIndicator.isReady()) {
-            double atr = atrIndicator.getValue();
-            upperChannel = shortMA + atrMultiplier * atr;
-            lowerChannel = shortMA - atrMultiplier * atr;
+            double atr = atrIndicator.getATR();
+            _upperChannel = _shortMA + _atrMultiplier * atr;
+            _lowerChannel = _shortMA - _atrMultiplier * atr;
         }
     }
     void updateLongMA(const MarketData& tick) {
-        longMAIndicator.update(tick);
-        longMA = longMAIndicator.getValue();
+		longMAIndicator.addPrice(tick.last_price);
+        _longMA = longMAIndicator.getLongMA();
     }   
 
-    void onBar(const MarketData& tick ) override {
+    void onBar(const MarketData& tick) /* override */ {
         // 确保ATR和均线指标已经准备好
         if (!atrIndicator.isReady() || !shortMAIndicator.isReady() || !longMAIndicator.isReady()) {
             return;
         }
-        // 获取当前价格
-        double currentPrice = tick.close; // 假设tick包含收盘价
-        // 交易逻辑
-        if (currentPrice > upperChannel && shortMA > longMA) {
-            // 价格突破上轨且短期均线在长期均线上方，考虑做多
-            if (position <= 0) { // 当前没有多头持仓
-                placeOrder("BUY", 100, currentPrice); // 买入100股
+        double currentPrice = tick.last_price;
+        if (currentPrice > _upperChannel && _shortMA > _longMA) {
+            if (position <= 0) {
+                placeOrder("BUY", 100, currentPrice);
             }
-        } else if (currentPrice < lowerChannel && shortMA < longMA) {
-            // 价格跌破下轨且短期均线在长期均线下方，考虑做空
-            if (position >= 0) { // 当前没有空头持仓
-                placeOrder("SELL", 100, currentPrice); // 卖出100股
+        } else if (currentPrice < _lowerChannel && _shortMA < _longMA) {
+            if (position >= 0) {
+                placeOrder("SELL", 100, currentPrice);
             }
         } else {
-            // 价格在通道内，考虑平仓
-            if (position > 0) { // 当前有多头持仓
-                placeOrder("SELL", position, currentPrice); // 平多头仓位
-            } else if (position < 0) { // 当前有空头持仓
-                placeOrder("BUY", -position, currentPrice); // 平空头仓位
+            if (position > 0) {
+                placeOrder("SELL", position, currentPrice);
+            } else if (position < 0) {
+                placeOrder("BUY", -position, currentPrice);
             }
         }
         Logger::get_instance().info("onBar executed trading logic");
@@ -203,7 +189,8 @@ private:
         std::vector<double> priceData; // 需要在类中维护价格数据
         if (priceData.size() < period) {
             return; // 数据点不足，无法计算 
-                    // 计算平均值
-        double sma = sum / period;  
+            // 计算平均值
+            double sma = sum / period;
+        }
     }
 };
